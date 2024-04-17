@@ -1,3 +1,5 @@
+const Browser = typeof browser === "undefined" ? chrome : browser;
+const manifest = Browser.runtime.getManifest();
 const store = {
   init: function () {
     this.data = JSON.parse(localStorage.getItem("gtools")) || {};
@@ -249,8 +251,6 @@ let storeDefault = {
   },
 };
 
-const Browser = typeof browser === "undefined" ? chrome : browser;
-const manifest = Browser.runtime.getManifest();
 const info = {
   playerId(mnk) {
     let cookiePlayerId = document.cookie.match(
