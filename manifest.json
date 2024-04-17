@@ -1,0 +1,45 @@
+{
+  "name": "Gladiatus Tools",
+  "version": "0.0.1",
+  "description": "Help to do Things",
+  "author": "Nephtus",
+  "background": {
+    "scripts": [
+      "/src/resources/libraries/jquery-3.5.1.min.js",
+      "/src/background.js"
+    ],
+    "persistent": false
+  },
+  "permissions": ["storage", "alarms"],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.gladiatus.gameforge.com/game/index.php*",
+        "*://lobby.gladiatus.gameforge.com/*"
+      ],
+      "js": [
+        "/src/resources/libraries/jquery-3.5.1.min.js",
+        "/src/loader.js",
+        "/src/tools.js",
+        "/src/main.js",
+        "/src/modules/menu.js",
+        "/src/modules/player.js",
+        "/src/modules/expedition.js",
+        "/src/modules/heal.js",
+        "/src/modules/arena.js",
+        "/src/modules/turma.js",
+        "/src/modules/quests.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "icons": {
+    "16": "logos/nLogo16.png",
+    "32": "logos/nLogo32.png",
+    "48": "logos/nLogo48.png",
+    "128": "logos/nLogo128.png"
+  },
+  "web_accessible_resources": ["src/*"],
+  "manifest_version": 2
+}

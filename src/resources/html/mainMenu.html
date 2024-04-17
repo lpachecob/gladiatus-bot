@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <gs-tools class="gs-tools-menu">
+    <status class="gt-menu-item">
+      <div class="gt-menu-container">
+        <h2 style="font-size: medium" class="gt-menu-button" gtkey="status">
+          Menu
+        </h2>
+      </div>
+    </status>
+    <main-control class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control">GTools</span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="control-start" id="control-control" />
+          <label for="control-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+      <div class="gt-submenu-item" style="display: none">
+        <div class="gt-submenu-item-container-3">
+          <div>Tiempo de espera por salud</div>
+          <div class="gt-submenu-item-container">
+            <input type="number" gtkey="heal-timeout" style="width: 3rem" />
+            <div class="gt-menu-switch">
+              <input
+                type="checkbox"
+                gtkey="heal-timeout-switch"
+                id="heal-timeout-switch"
+              />
+              <label for="heal-timeout-switch" class="gt-menu-slider"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main-control>
+    <quest class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control"> misiones </span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="quest-start" id="quest-control" />
+          <label for="quest-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+
+      <div class="gt-submenu-item" style="display: none">
+        <div>Configuración de misiones</div>
+      </div>
+    </quest>
+    <heal class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control">Heal</span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="heal-start" id="heal-control" />
+          <label for="heal-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+      <div class="gt-submenu-item" style="display: none">
+        <div class="gt-submenu-item-container">
+          <div>Porcentaje de salud minimo antes de curar</div>
+          <div class="gt-submenu-item-container">
+            <input type="number" gtkey="heal-min" style="width: 3rem" />
+          </div>
+        </div>
+        <div class="gt-submenu-item-container">
+          <span>Inventario donde esta la comida</span>
+          <select id="inventory-slot" gtkey="inventory-slot">
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+            <option value="4">5</option>
+            <option value="5">6</option>
+            <option value="6">7</option>
+            <option value="7">8</option>
+          </select>
+        </div>
+      </div>
+    </heal>
+    <expedition class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control"> Expedición </span>
+        <div class="gt-menu-switch">
+          <input
+            type="checkbox"
+            gtkey="expedition-start"
+            id="expedition-control"
+          />
+          <label for="expedition-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+
+      <div class="gt-submenu-item" style="display: none">
+        <div>Configuración de expedición</div>
+        <div class="gt-submenu-item-container-2">
+          <span>Localización</span>
+          <select
+            id="gt-expedition-locations"
+            gtkey="select-expedition-location"
+          ></select>
+        </div>
+        <div class="gt-submenu-item-container">
+          <span>Enemigo</span>
+          <select id="gt-expedition-enemy" gtkey="select-expedition-enemy">
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+          </select>
+        </div>
+      </div>
+    </expedition>
+    <arena class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control"> Arena </span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="arena-start" id="arena-control" />
+          <label for="arena-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+
+      <div class="gt-submenu-item" style="display: none">
+        <div>Configuración de arena</div>
+        <div class="gt-submenu-item-container">
+          <span class="gt-menu-button">Atacar provincia</span>
+          <div class="gt-menu-switch">
+            <input
+              type="checkbox"
+              gtkey="arena-provinciarum"
+              id="arena-provinciarum"
+            />
+            <label for="arena-provinciarum" class="gt-menu-slider"></label>
+          </div>
+        </div>
+        <div class="gt-submenu-item-container">
+          <span>Enemigo a atacar</span>
+          <select id="arena-enemy" gtkey="arena-enemy">
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+            <option value="4">5</option>
+          </select>
+        </div>
+      </div>
+    </arena>
+    <turma class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control"> Turma </span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="turma-start" id="turma-control" />
+          <label for="turma-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+
+      <div class="gt-submenu-item" style="display: none">
+        <div>Configuración de circo turma</div>
+        <div class="gt-submenu-item-container">
+          <span class="gt-menu-button">Atacar provincia</span>
+          <div class="gt-menu-switch">
+            <input
+              type="checkbox"
+              gtkey="turma-provinciarum"
+              id="turma-provinciarum"
+            />
+            <label for="turma-provinciarum" class="gt-menu-slider"></label>
+          </div>
+        </div>
+        <div class="gt-submenu-item-container">
+          <span>Enemigo a atacar</span>
+          <select id="turma-enemy" gtkey="turma-enemy">
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+            <option value="4">5</option>
+          </select>
+        </div>
+      </div>
+    </turma>
+  </gs-tools>
+  <g-tools-status>
+    <div class="status-log" id="status-log"></div>
+  </g-tools-status>
+</html>
