@@ -49,7 +49,7 @@ const eventExpedition = {
 
         if (store.data.event.timeOut <= 0) {
           clearInterval(countdown);
-          window.location.reload()
+          window.location.reload();
         }
       }, 1000);
 
@@ -77,9 +77,21 @@ const eventExpedition = {
         player.health >= store.data.heal.hpMin &&
         store.data.event.timeOut <= 0
       ) {
+        const texto =
+          document.getElementsByClassName("section-header")[0].children[1]
+            .innerText;
+
+        // Usa una expresión regular para obtener el número de puntos
+        const puntos = texto.match(/(\d+)/)[0];
+
+        // Convierte el resultado a número entero, si es necesario
+        const puntosEvento = parseInt(puntos, 10);
+
+        console.log(puntosEvento); // Imprime 14
+
         const expeditionButton =
           document.getElementsByClassName("expedition_button");
-        expeditionButton[store.data.event.enemy].click();
+        if (puntosEvento > 0) expeditionButton[store.data.event.enemy].click();
       }
     }
   },
