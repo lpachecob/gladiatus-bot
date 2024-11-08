@@ -6,6 +6,7 @@ const heal = {
         { name: "heal-start", value: "heal.enable" },
         { name: "heal-min", value: "heal.hpMin" },
         { name: "heal-buy-food", value: "heal.buyFood" },
+        { name: "heal-use-cloths", value: "heal.useCloths" },
         { name: "inventory-slot", value: "heal.bag" },
       ],
       [
@@ -25,6 +26,12 @@ const heal = {
           name: "heal-buy-food",
           value: () => {
             store.data.heal.buyFood = !store.data.heal.buyFood;
+          },
+        },
+        {
+          name: "heal-use-cloths",
+          value: () => {
+            store.data.heal.useCloths = !store.data.heal.useCloths;
           },
         },
       ],
@@ -51,6 +58,12 @@ const heal = {
           },
         },
         {
+          name: "heal.useCloths",
+          value: (button, target) => {
+            button.checked = store.data.heal.useCloths;
+          },
+        },
+        {
           name: "heal.bag",
           value: (button, target) => {
             button.selectedIndex = store.data.heal.bag;
@@ -59,101 +72,121 @@ const heal = {
       ]
     );
   },
-  start() {
+  async start() {
     healing = true;
-    if (store.data.heal.enable) {
-      const mainMenuLink = document.getElementsByClassName("menuitem")[0];
+    if (!store.data.heal.enable) return;
 
-      if (
-        player.health <= store.data.heal.hpMin &&
-        urlParams.get("mod") !== "overview"
-      ) {
+    const mainMenuLink = document.getElementsByClassName("menuitem")[0];
+
+    if (player.health <= store.data.heal.hpMin) {
+      if (urlParams.get("mod") !== "overview") {
         mainMenuLink.click();
-      }
-
-      if (
-        urlParams.get("mod") === "overview" &&
-        player.health <= store.data.heal.hpMin
-      ) {
-        const bags = Array.from(
-          document.getElementsByClassName("awesome-tabs")
-        ).filter((item) => item.hasAttribute("data-bag-number"));
-        statusLog.innerText = "Abriendo mochila...";
-        bags[store.data.heal.bag].click();
-        // Selecciona el elemento que quieres arrastrar y el objetivo donde quieres soltarlo
-
-        setTimeout(() => {
-          const elementoArrastrar = Array.from(
-            document.getElementsByClassName("ui-draggable")
-          ).filter((item) => item.hasAttribute("data-vitality"))[0];
-          const objetivoSoltar =
-            document.getElementsByClassName("ui-droppable")[0];
-
-          if (elementoArrastrar) {
-            // Función para emular el proceso de arrastre y soltado
-            function emularArrastreYSoltado() {
-              statusLog.innerText = "Cargando coordenadas...";
-              // Obtener las coordenadas y dimensiones del objetivo
-              const objetivoRect = objetivoSoltar.getBoundingClientRect();
-              const objetivoX = objetivoRect.left + window.pageXOffset;
-              const objetivoY = objetivoRect.top + window.pageYOffset;
-              const objetivoWidth = objetivoRect.width;
-              const objetivoHeight = objetivoRect.height;
-
-              // Obtener las dimensiones del elemento a arrastrar
-              const elementoRect = elementoArrastrar.getBoundingClientRect();
-              const elementoWidth = elementoRect.width;
-              const elementoHeight = elementoRect.height;
-
-              // Calcular las coordenadas donde el elemento debe colocarse en el centro del objetivo
-              const centroX = objetivoX + (objetivoWidth - elementoWidth) / 2;
-              const centroY = objetivoY + (objetivoHeight - elementoHeight) / 2;
-
-              // Crear un evento de 'mousedown' en el elemento a arrastrar
-              const eventoMouseDown = new MouseEvent("mousedown", {
-                bubbles: true,
-                cancelable: true,
-                clientX: elementoRect.left,
-                clientY: elementoRect.top,
-              });
-              statusLog.innerText = "Seleccionado comida...";
-              elementoArrastrar.dispatchEvent(eventoMouseDown);
-
-              // Crear un evento de 'mousemove' para mover el elemento hacia el centro del objetivo
-              const eventoMouseMove = new MouseEvent("mousemove", {
-                bubbles: true,
-                cancelable: true,
-                clientX: centroX,
-                clientY: centroY,
-              });
-              statusLog.innerText = "Moviendo comida...";
-              elementoArrastrar.dispatchEvent(eventoMouseMove);
-
-              // Crear un evento de 'mouseup' en el objetivo para soltar el elemento
-              const eventoMouseUp = new MouseEvent("mouseup", {
-                bubbles: true,
-                cancelable: true,
-                clientX: centroX,
-                clientY: centroY,
-              });
-              statusLog.innerText = "Soltando comida...";
-              objetivoSoltar.dispatchEvent(eventoMouseUp);
-
-              statusLog.innerText = "Recargando página...";
-              window.location.reload();
-            }
-            // Llama a la función para emular el proceso de arrastre y soltado
-            emularArrastreYSoltado();
-          } else {
-            statusLog.innerText = "Sin comida...";
-            store.data.heal.enable = false;
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          }
-        }, 1000);
+      } else {
+        this.openBagAndHeal();
       }
     }
     healing = false;
+  },
+
+  openBagAndHeal() {
+    const bags = Array.from(
+      document.getElementsByClassName("awesome-tabs")
+    ).filter((item) => item.hasAttribute("data-bag-number"));
+
+    statusLog.innerText = "Abriendo mochila...";
+    bags[store.data.heal.bag].click();
+
+    setTimeout(() => this.tryToHeal(), 1000);
+  },
+
+  async tryToHeal() {
+    const foodItem = Array.from(
+      document.getElementsByClassName("ui-draggable")
+    ).filter((item) => item.hasAttribute("data-vitality"))[0];
+    const dropTarget = document.getElementsByClassName("ui-droppable")[0];
+
+    console.log(foodItem);
+
+    if (foodItem) {
+      this.simulateDragAndDrop(foodItem, dropTarget);
+    } else {
+      statusLog.innerText = "Sin comida...";
+      await this.buyFood();
+    }
+  },
+
+  async buyFood() {
+    if (store.data.heal.buyFood) {
+      const goldValElement = document.getElementById("sstat_gold_val");
+      const goldValue = parseFloat(
+        goldValElement.textContent.replace(".", "").replace(",", ".")
+      );
+      statusLog.innerText = "Comprando comida...";
+      const foodItem = await info.searchFoodInVendor();
+      let workClothes = await info.getWorkClothesCount();
+
+      if (!foodItem && store.data.heal.useCloths && workClothes > 0) {
+        statusLog.innerText = "Actualizando vendedor...";
+        info.refreshVendor();
+      } else {
+        store.data.heal.enable = false;
+        setTimeout(() => window.location.reload(), 1000);
+      }
+
+      const priceGold = foodItem.getAttribute("data-price-gold");
+      if (priceGold < goldValue) await info.buyItem(foodItem);
+      setTimeout(() => window.location.reload(), 5000);
+    }
+  },
+
+  simulateDragAndDrop(dragElement, dropTarget) {
+    statusLog.innerText = "Cargando coordenadas...";
+    const { centroX, centroY } = this.calculateDropPosition(
+      dragElement,
+      dropTarget
+    );
+
+    this.dispatchMouseEvent(
+      dragElement,
+      "mousedown",
+      dragElement.getBoundingClientRect().left,
+      dragElement.getBoundingClientRect().top
+    );
+    statusLog.innerText = "Seleccionado comida...";
+
+    this.dispatchMouseEvent(dragElement, "mousemove", centroX, centroY);
+    statusLog.innerText = "Moviendo comida...";
+
+    this.dispatchMouseEvent(dropTarget, "mouseup", centroX, centroY);
+    statusLog.innerText = "Soltando comida...";
+
+    statusLog.innerText = "Recargando página...";
+    window.location.reload();
+  },
+
+  calculateDropPosition(dragElement, dropTarget) {
+    const targetRect = dropTarget.getBoundingClientRect();
+    const elementRect = dragElement.getBoundingClientRect();
+
+    const centroX =
+      targetRect.left +
+      (targetRect.width - elementRect.width) / 2 +
+      window.pageXOffset;
+    const centroY =
+      targetRect.top +
+      (targetRect.height - elementRect.height) / 2 +
+      window.pageYOffset;
+
+    return { centroX, centroY };
+  },
+
+  dispatchMouseEvent(element, eventType, clientX, clientY) {
+    const event = new MouseEvent(eventType, {
+      bubbles: true,
+      cancelable: true,
+      clientX,
+      clientY,
+    });
+    element.dispatchEvent(event);
   },
 };

@@ -90,6 +90,7 @@ let storeDefault = {
     bag: 1,
     hpMin: 25,
     buyFood: false,
+    useCloths: false,
   },
   underworld: {
     enable: false,
@@ -646,5 +647,109 @@ const info = {
   },
   sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  },
+
+  async searchFoodInVendor() {
+    let link = `${window.location.origin}/game/index.php`;
+
+    let htmlText = await fetch(
+      `${link}?mod=inventory&sub=3&subsub=1&sh=${urlParams.get("sh")}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+
+    if (!htmlText) return [];
+
+    // Analiza el HTML
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+    let item = doc.getElementById("shop").children;
+    return item[0];
+  },
+  async buyItem(item) {
+    let link = `${window.location.origin}/game/ajax.php`;
+    const positionX = item.getAttribute("data-position-x");
+    const positionY = item.getAttribute("data-position-y");
+
+    fetch(
+      `${link}?mod=inventory&submod=move&from=305&fromX=${positionX}&fromY=${positionY}&to=512&toX=2&toY=1&amount=1&doll=1`,
+      {
+        method: "POST",
+
+        body: `&a=1731079837606&sh=${urlParams.get("sh")}`,
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => window.location.reload())
+      .catch((error) => console.error("Error:", error));
+  },
+  async getWorkClothesCount() {
+    let link = `${window.location.origin}/game/index.php`;
+
+    let htmlText = await fetch(
+      `${link}?mod=inventory&sub=3&subsub=1&sh=${urlParams.get("sh")}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+
+    if (!htmlText) return [];
+
+    // Analiza el HTML
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+    let tooltipData = doc
+      .getElementsByName("bestechen")[0]
+      .parentElement.children[1].children[0].getAttribute("data-tooltip");
+
+    // Parseamos el JSON del atributo `data-tooltip`
+    let tooltipArray = JSON.parse(tooltipData);
+
+    // Aplanamos el array y buscamos el texto que contiene "Posees: "
+    let poseeText = tooltipArray
+      .flat(3) // Aplana el array a 3 niveles
+      .find((item) => typeof item === "string" && item.includes("Posees: "));
+
+    // Extraemos el número usando una expresión regular
+    if (poseeText) {
+      let poseeCantidad = poseeText.match(/Posees:\s(\d+)/)[1];
+      return parseInt(poseeCantidad); // Debería mostrar "70"
+    } else {
+      console.log("No se encontró el texto 'Posees: '");
+    }
+  },
+  async refreshVendor() {
+    let link = `${window.location.origin}/game/index.php`;
+
+    fetch(`${link}/?mod=inventory&sub=3&subsub=1&sh=${urlParams.get("sh")}`, {
+      method: "POST",
+      body: new URLSearchParams({
+        bestechen: "Nuevos bienes",
+      }),
+    })
+      .then((response) => response.text())
+      .then((data) => console.log(data))
+      .catch((error) => console.error("Error:", error));
   },
 };
