@@ -67,13 +67,18 @@ const saveGold = {
   },
   async start() {
     console.log(store.data.gold.packagesPurchased);
+
     if (store.data.gold.timeOut > 0) {
       const countdowngold = setInterval(() => {
         store.data.gold.timeOut -= 1; // Restar 1 al timeOut cada segundo
         console.log(`Tiempo restante: ${store.data.gold.timeOut} segundos`);
+        document.getElementById(
+          "goldTimer"
+        ).innerText = `: ${store.data.gold.timeOut}s`;
         if (store.data.gold.timeOut <= 0) {
           clearInterval(countdowngold); // Detener el intervalo cuando timeOut sea 0
           console.log("Timer completed");
+          window.location.reload(); // Recargar la página
         }
       }, 1000); // Intervalo de 1 segundo
     }
