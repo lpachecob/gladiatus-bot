@@ -66,6 +66,18 @@ const saveGold = {
     );
   },
   async start() {
+    console.log(store.data.gold.packagesPurchased);
+    if (store.data.gold.timeOut > 0) {
+      const countdowngold = setInterval(() => {
+        store.data.gold.timeOut -= 1; // Restar 1 al timeOut cada segundo
+        console.log(`Tiempo restante: ${store.data.gold.timeOut} segundos`);
+        if (store.data.gold.timeOut <= 0) {
+          clearInterval(countdowngold); // Detener el intervalo cuando timeOut sea 0
+          console.log("Timer completed");
+        }
+      }, 1000); // Intervalo de 1 segundo
+    }
+
     const goldValElement = document.getElementById("sstat_gold_val");
     const goldValue = parseFloat(
       goldValElement.textContent.replace(".", "").replace(",", ".")
@@ -78,8 +90,10 @@ const saveGold = {
 
     // Acciones comunes de venta
     const sellPackages = async () => {
+      console.log(store.data.gold.packagesPurchased);
       for (const element of store.data.gold.packagesPurchased) {
         statusLog.innerText = "Vendiendo Rotativo";
+        console.log(element.name, element.price);
         await info.sellPackage(element.name, element.price);
         await info.sleep(2000);
       }
@@ -110,8 +124,8 @@ const saveGold = {
         document.getElementById("guild_market_div").click();
       }
     };
-
-    if (store.data.gold.enable) {
+    console.log(store.data.gold.timeOut);
+    if (store.data.gold.enable && store.data.gold.timeOut <= 0) {
       if (store.data.gold.packagesPurchased.length > 0) {
         savingGold = true;
         statusLog.innerText = "Vendiendo rotativos pendientes";
@@ -128,6 +142,13 @@ const saveGold = {
 
         statusLog.innerText = "Listando Rotativos";
         const guildMarkedList = await info.getGuildMarkedItems();
+        console.log(guildMarkedList);
+        if (guildMarkedList.length == 0) {
+          statusLog.innerText = "Sin rotativos listados";
+          savingGold = false;
+          store.data.gold.timeOut = 40;
+          window.location.reload();
+        }
         statusLog.innerText = "Rotativos listados";
         await info.sleep(2000);
 

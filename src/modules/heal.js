@@ -129,7 +129,7 @@ const heal = {
         statusLog.innerText = "Actualizando vendedor...";
         info.refreshVendor();
       } else {
-        store.data.heal.enable = false;
+        // store.data.heal.enable = false;
         setTimeout(() => window.location.reload(), 1000);
       }
 

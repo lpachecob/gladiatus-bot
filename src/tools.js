@@ -589,11 +589,13 @@ const info = {
       ) {
         // sellBox.appendChild(element);
         this.moverParaVender(element, sellBox);
-        priceBox.value = price;
-        time.selectedIndex = 2;
+        setTimeout(() => {
+          priceBox.value = price;
+          time.selectedIndex = 2;
+        }, 2000);
         setTimeout(() => {
           document.getElementsByName("anbieten")[0].click();
-        }, 2000);
+        }, 3000);
       }
     });
   },
