@@ -78,7 +78,6 @@ const turma = {
       ) {
         arenaButton.click();
       }
-      console.log(mod === "arena");
 
       if (
         !store.data.turma.provinciarum &&

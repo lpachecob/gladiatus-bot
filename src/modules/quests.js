@@ -24,26 +24,31 @@ const quests = {
     if (store.data.quests.enable) {
       const mod = urlParams.get("mod");
       const questButton = document.getElementsByClassName("menuitem")[1];
-      console.log(mod);
       if (mod != "quests") {
         questButton.click();
-      }
-      const questList = [1, 2, 3, 4, 5].map(
-        (index) =>
-          document.getElementsByClassName("contentboard_start")[0].children[
-            index
-          ]
-      );
-      questList.forEach((quest) => {
-        Array.from(quest.children).forEach((element) => {
-          const links = element.querySelectorAll("a");
-          Array.from(links).forEach((link) => {
-            if (!link.classList.contains("quest_slot_button_cancel")) {
-              link.click();
-            }
+      } else {
+        const questList = [1, 2, 3, 4, 5].map(
+          (index) =>
+            document.getElementsByClassName("contentboard_start")[0].children[
+              index
+            ]
+        );
+        let missionCount = 0;
+        questList.forEach((quest) => {
+          Array.from(quest.children).forEach((element) => {
+            const links = element.querySelectorAll("a");
+            Array.from(links).forEach((link) => {
+              missionCount++;
+              if (!link.classList.contains("quest_slot_button_cancel")) {
+                link.click();
+              }
+            });
           });
         });
-      });
+        if (missionCount <= 1) {
+          document.getElementById("quest_footer_reroll").children[0].click();
+        }
+      }
     }
   },
 };

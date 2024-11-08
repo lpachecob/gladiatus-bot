@@ -2,7 +2,9 @@ const url = new URL(window.location.href);
 const queryString = url.search;
 const urlParams = new URLSearchParams(queryString);
 let healing = false;
+let savingGold = false;
 let checkQuests = true;
+
 if (localStorage.gtools) {
   store.init();
 } else {
@@ -81,13 +83,14 @@ const gTools = {
   },
   main() {
     if (store.data.bot.enable) {
-      heal.start();
-      console.log(healing);
-      if (!healing) {
+      saveGold.start();
+      if (!savingGold) heal.start();
+      if (!healing && !savingGold) {
         setTimeout(() => {
           expedition.start();
           arena.start();
           turma.start();
+          eventExpedition.start();
           quests.start();
         }, 2000);
       }
@@ -105,13 +108,23 @@ const gTools = {
   },
 
   preload() {
+    let link = `${window.location.origin}/game/index.php`;
+    jQuery.get(`${link}?mod=overview&sh=${urlParams.get("sh")}`, (p) => {
+      store.data.player.name = jQuery(p).find(".playername_achievement")[0]
+        ? jQuery(p).find(".playername_achievement")[0].innerText.match(/\w+/)[0]
+        : jQuery(p).find(".playername")[0].innerText.match(/\w+/)[0];
+    });
+
     loader.css("gs-tools");
     this.menu();
+    saveGold.menu();
     quests.menu();
     expedition.menu();
     heal.menu();
     arena.menu();
     turma.menu();
+    eventExpedition.menu();
+    // packages.init();
     menu.start(() => {
       player.initPlayer();
       expedition.init();

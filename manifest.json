@@ -1,6 +1,6 @@
 {
   "name": "Gladiatus Tools",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Help to do Things",
   "author": "Nephtus",
   "background": {
@@ -23,12 +23,17 @@
         "/src/tools.js",
         "/src/main.js",
         "/src/modules/menu.js",
+        "/src/modules/packages.js",
         "/src/modules/player.js",
         "/src/modules/expedition.js",
         "/src/modules/heal.js",
         "/src/modules/arena.js",
         "/src/modules/turma.js",
-        "/src/modules/quests.js"
+        "/src/modules/quests.js",
+        "/src/modules/saveGold.js",
+        "/src/modules/eventExpedition.js",
+        "/src/modules/simulator/request_playerData.js",
+        "/src/modules/simulator/getStatsPlayer.js"
       ],
       "run_at": "document_start",
       "all_frames": true

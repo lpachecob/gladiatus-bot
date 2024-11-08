@@ -83,7 +83,6 @@ const arena = {
       ) {
         document.getElementsByClassName("awesome-tabs")[0].click();
       }
-      console.log(submod !== "serverArena");
       if (store.data.arena.provinciarum && mod === "arena" && type !== "2") {
         document.getElementsByClassName("awesome-tabs")[1].click();
       }

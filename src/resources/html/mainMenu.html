@@ -44,6 +44,41 @@
         </div>
       </div>
     </main-control>
+    <gold class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control">Guardar Oro</span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="gold-start" id="gold-control" />
+          <label for="gold-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+      <div class="gt-submenu-item" style="display: none">
+        <div
+          class="gt-submenu-item-container"
+          style="grid-template-columns: auto 35%"
+        >
+          <span>Tipo de almacenamiento</span>
+          <select id="gold-method" gtkey="gold-method" style="width: 6.5rem">
+            <option value="0">Alianza</option>
+            <option value="1">S̶u̶b̶a̶s̶t̶a</option>
+            <option value="2">E̶n̶t̶r̶e̶n̶a̶m̶i̶e̶n̶t̶o</option>
+          </select>
+          <div>Oro de bolsillo</div>
+          <div class="gt-submenu-item-container">
+            <input type="number" gtkey="gold-hold" style="width: 6rem" />
+          </div>
+          <div>Oro mínimo</div>
+          <div class="gt-submenu-item-container">
+            <input type="number" gtkey="gold-min" style="width: 6rem" />
+          </div>
+          <div>Oro máximo</div>
+          <div class="gt-submenu-item-container">
+            <input type="number" gtkey="gold-max" style="width: 6rem" />
+          </div>
+          <div>Paquetes comprados</div>
+        </div>
+      </div>
+    </gold>
     <quest class="gt-menu-item">
       <div class="gt-menu-container">
         <span class="gt-menu-button" gtkey="control"> Misiones </span>
@@ -188,6 +223,28 @@
         </div>
       </div>
     </turma>
+    <expedition class="gt-menu-item">
+      <div class="gt-menu-container">
+        <span class="gt-menu-button" gtkey="control"> Evento </span>
+        <div class="gt-menu-switch">
+          <input type="checkbox" gtkey="event-start" id="event-control" />
+          <label for="event-control" class="gt-menu-slider"></label>
+        </div>
+      </div>
+
+      <div class="gt-submenu-item" style="display: none">
+        <div>Configuración de expedición</div>
+        <div class="gt-submenu-item-container">
+          <span>Enemigo</span>
+          <select id="gt-event-enemy" gtkey="select-event-enemy">
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+          </select>
+        </div>
+      </div>
+    </expedition>
   </gs-tools>
   <g-tools-status>
     <div class="status-log" id="status-log"></div>

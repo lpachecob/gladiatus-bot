@@ -113,12 +113,15 @@ const expedition = {
         player.health >= store.data.heal.hpMin &&
         player.expeditionPoints > 0
       ) {
+        statusLog.innerText = "Atacando en la expedición";
+
         expeditionButton[store.data.expedition.enemy].click();
       }
     }
   },
   goToLocation() {
     setTimeout(() => {
+      statusLog.innerText = "Yendo a la expedición";
       expeditionLocations[store.data.expedition.loc].click();
     }, 1);
   },
