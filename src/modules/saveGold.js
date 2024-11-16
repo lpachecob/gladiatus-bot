@@ -85,8 +85,11 @@ const saveGold = {
 
     const goldValElement = document.getElementById("sstat_gold_val");
     const goldValue = parseFloat(
-      goldValElement.textContent.replace(".", "").replace(",", ".")
+      goldValElement.textContent
+        .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
+        .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
     );
+    console.log(goldValue);
     const mod = urlParams.get("mod");
 
     const goldIsHigherThanMinAndHold =
@@ -121,12 +124,10 @@ const saveGold = {
 
     // Acciones para abrir el menú correcto
     const openMenu = () => {
-      if (mod !== "guild" && mod !== "guildMarket") {
-        document
-          .getElementsByClassName("menuitem advanced_menu_link")[2]
-          .click();
-      } else if (mod === "guild") {
-        document.getElementById("guild_market_div").click();
+      if (mod !== "guildMarket") {
+        window.location.href = `${
+          window.location.origin
+        }/game/index.php?mod=guildMarket&sh=${urlParams.get("sh")}`;
       }
     };
     console.log(store.data.gold.timeOut);

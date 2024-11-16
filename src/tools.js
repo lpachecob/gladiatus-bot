@@ -397,7 +397,9 @@ const info = {
       const goldValElement = document.getElementById("sstat_gold_val");
       const goldValString = goldValElement.textContent;
       const goldValue = parseFloat(
-        goldValString.replace(".", "").replace(",", ".")
+        goldValElement.textContent
+          .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
+          .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
       );
       if (
         price < parseInt(store.data.gold.goldMin) ||

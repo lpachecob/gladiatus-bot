@@ -88,9 +88,13 @@ const gTools = {
       if (!healing && !savingGold) {
         setTimeout(() => {
           expedition.start();
+          info.sleep(1000)
           arena.start();
+          info.sleep(1000)
           turma.start();
+          info.sleep(1000)
           eventExpedition.start();
+          info.sleep(1000)
           quests.start();
         }, 2000);
       }
