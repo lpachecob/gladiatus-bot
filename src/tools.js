@@ -91,6 +91,7 @@ let storeDefault = {
     hpMin: 25,
     buyFood: false,
     useCloths: false,
+    timeOut: 0,
   },
   underworld: {
     enable: false,
@@ -376,7 +377,6 @@ const info = {
     // Selecciona el tbody que contiene los formularios y filas
     let marketTable = doc.getElementById("market_table");
     let tbody = marketTable.children[0].children[0];
-    // console.log(tbody);
     // // Obtén todos los elementos dentro del tbody
     let elements = Array.from(tbody.children);
 
@@ -417,7 +417,6 @@ const info = {
       };
       items.push(item);
     }
-    // console.log(items);
     return items;
   },
   buyGuildMarkedItem(buyId) {
@@ -497,7 +496,6 @@ const info = {
     return itemFormValue;
   },
   async collectPackage(formId) {
-    console.log(formId);
     try {
       let link = `${window.location.origin}/game/ajax.php`;
 
@@ -518,7 +516,6 @@ const info = {
       }
 
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error al mover el item:", error);
     }
@@ -548,8 +545,6 @@ const info = {
     // Analiza el HTML
     let parser = new DOMParser();
     let doc = parser.parseFromString(htmlText, "text/html");
-
-    console.log(doc);
 
     const sellBox = document.getElementById("market_sell").children[0];
     const inventory = Array.from(document.getElementById("inv").children);
@@ -729,7 +724,9 @@ const info = {
 
     // Parseamos el JSON del atributo `data-tooltip`
     let tooltipArray = JSON.parse(tooltipData);
-
+    
+    if (!tooltipArray) return 0;
+    
     // Aplanamos el array y buscamos el texto que contiene "Posees: "
     let poseeText = tooltipArray
       .flat(3) // Aplana el array a 3 niveles

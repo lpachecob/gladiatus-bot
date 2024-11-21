@@ -1,7 +1,6 @@
 const packages = {
   init: function () {
     let packagesInterface = document.getElementsByTagName("article")[0];
-    console.log(packagesInterface.children);
     let nuevoDiv = document.createElement("div");
     nuevoDiv.innerHTML = `
         <h2 class="section-header" style="cursor: pointer; margin-top: -2px;">

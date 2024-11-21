@@ -73,8 +73,25 @@ const heal = {
     );
   },
   async start() {
+    store.data.heal.timeOut = store.data.heal.timeOut ?? 0;
+    if (store.data.heal.timeOut > 0) {
+      const countdownHeal = setInterval(() => {
+        store.data.heal.timeOut -= 1; // Restar 1 al timeOut cada segundo
+        document.getElementById(
+          "healTimer"
+        ).innerText = `: ${store.data.heal.timeOut}s`;
+        if (store.data.heal.timeOut <= 0) {
+          clearInterval(countdownHeal); // Detener el intervalo cuando timeOut sea 0
+          window.location.reload(); // Recargar la página
+        }
+      }, 1000); // Intervalo de 1 segundo
+    }
+
+    if (!store.data.heal.enable) {
+      healing = false;
+      return;
+    }
     healing = true;
-    if (!store.data.heal.enable) return;
 
     const mainMenuLink = document.getElementsByClassName("menuitem")[0];
 
@@ -82,10 +99,9 @@ const heal = {
       if (urlParams.get("mod") !== "overview") {
         mainMenuLink.click();
       } else {
-        this.openBagAndHeal();
+        await this.openBagAndHeal();
       }
     }
-    healing = false;
   },
 
   openBagAndHeal() {
@@ -96,7 +112,13 @@ const heal = {
     statusLog.innerText = "Abriendo mochila...";
     bags[store.data.heal.bag].click();
 
-    setTimeout(() => this.tryToHeal(), 1000);
+    setTimeout(
+      async () =>
+        await this.tryToHeal().then(() => {
+          healing = false;
+        }),
+      1000
+    );
   },
 
   async tryToHeal() {
@@ -104,8 +126,6 @@ const heal = {
       document.getElementsByClassName("ui-draggable")
     ).filter((item) => item.hasAttribute("data-vitality"))[0];
     const dropTarget = document.getElementsByClassName("ui-droppable")[0];
-
-    console.log(foodItem);
 
     if (foodItem) {
       this.simulateDragAndDrop(foodItem, dropTarget);
@@ -130,6 +150,7 @@ const heal = {
         info.refreshVendor();
       } else {
         // store.data.heal.enable = false;
+        store.data.heal.timeOut = 40;
         setTimeout(() => window.location.reload(), 1000);
       }
 

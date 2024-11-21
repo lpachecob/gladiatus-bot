@@ -66,18 +66,14 @@ const saveGold = {
     );
   },
   async start() {
-    console.log(store.data.gold.packagesPurchased);
-
     if (store.data.gold.timeOut > 0) {
       const countdowngold = setInterval(() => {
         store.data.gold.timeOut -= 1; // Restar 1 al timeOut cada segundo
-        console.log(`Tiempo restante: ${store.data.gold.timeOut} segundos`);
         document.getElementById(
           "goldTimer"
         ).innerText = `: ${store.data.gold.timeOut}s`;
         if (store.data.gold.timeOut <= 0) {
           clearInterval(countdowngold); // Detener el intervalo cuando timeOut sea 0
-          console.log("Timer completed");
           window.location.reload(); // Recargar la página
         }
       }, 1000); // Intervalo de 1 segundo
@@ -89,7 +85,6 @@ const saveGold = {
         .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
         .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
     );
-    console.log(goldValue);
     const mod = urlParams.get("mod");
 
     const goldIsHigherThanMinAndHold =
@@ -98,10 +93,8 @@ const saveGold = {
 
     // Acciones comunes de venta
     const sellPackages = async () => {
-      console.log(store.data.gold.packagesPurchased);
       for (const element of store.data.gold.packagesPurchased) {
         statusLog.innerText = "Vendiendo Rotativo";
-        console.log(element.name, element.price);
         await info.sellPackage(element.name, element.price);
         await info.sleep(2000);
       }
@@ -130,7 +123,6 @@ const saveGold = {
         }/game/index.php?mod=guildMarket&sh=${urlParams.get("sh")}`;
       }
     };
-    console.log(store.data.gold.timeOut);
     if (store.data.gold.enable && store.data.gold.timeOut <= 0) {
       if (store.data.gold.packagesPurchased.length > 0) {
         savingGold = true;
@@ -148,7 +140,6 @@ const saveGold = {
 
         statusLog.innerText = "Listando Rotativos";
         const guildMarkedList = await info.getGuildMarkedItems();
-        console.log(guildMarkedList);
         if (guildMarkedList.length == 0) {
           statusLog.innerText = "Sin rotativos listados";
           savingGold = false;

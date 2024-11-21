@@ -81,20 +81,29 @@ const gTools = {
       ]
     );
   },
-  main() {
+  async main() {
+    const lootButton = document.getElementsByClassName("loot-button")[2];
+    if (lootButton) {
+      lootButton.click();
+    }
+
     if (store.data.bot.enable) {
-      saveGold.start();
-      if (!savingGold) heal.start();
+      await saveGold.start();
+      if (!savingGold)
+        await heal.start().then(() => {
+          healing = false;
+        });
+
       if (!healing && !savingGold) {
         setTimeout(() => {
           expedition.start();
-          info.sleep(1000)
+          info.sleep(1000);
           arena.start();
-          info.sleep(1000)
+          info.sleep(1000);
           turma.start();
-          info.sleep(1000)
+          info.sleep(1000);
           eventExpedition.start();
-          info.sleep(1000)
+          info.sleep(1000);
           quests.start();
         }, 2000);
       }

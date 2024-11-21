@@ -87,8 +87,6 @@ const eventExpedition = {
         // Convierte el resultado a número entero, si es necesario
         const puntosEvento = parseInt(puntos, 10);
 
-        console.log(puntosEvento); // Imprime 14
-
         const expeditionButton =
           document.getElementsByClassName("expedition_button");
         if (puntosEvento > 0) expeditionButton[store.data.event.enemy].click();
