@@ -33,7 +33,6 @@ const quests = {
               index
             ]
         );
-        console.log(questList);
         let missionCount = 0;
         questList.forEach((quest) => {
           Array.from(quest.children).forEach((element) => {
