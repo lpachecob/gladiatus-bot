@@ -495,12 +495,12 @@ const info = {
     });
     return itemFormValue;
   },
-  async collectPackage(formId) {
+  async collectPackage(formId, position = { x: 1, y: 1 }) {
     try {
       let link = `${window.location.origin}/game/ajax.php`;
 
       const response = await fetch(
-        `${link}?mod=inventory&submod=move&from=-${formId}&fromX=1&fromY=1&to=512&toX=1&toY=1&amount=1`,
+        `${link}?mod=inventory&submod=move&from=-${formId}&fromX=1&fromY=1&to=512&toX=${position.x}&toY=${position.y}&amount=1`,
         {
           method: "POST",
           headers: {
@@ -724,9 +724,9 @@ const info = {
 
     // Parseamos el JSON del atributo `data-tooltip`
     let tooltipArray = JSON.parse(tooltipData);
-    
+
     if (!tooltipArray) return 0;
-    
+
     // Aplanamos el array y buscamos el texto que contiene "Posees: "
     let poseeText = tooltipArray
       .flat(3) // Aplana el array a 3 niveles
@@ -752,5 +752,35 @@ const info = {
       .then((response) => response.text())
       .then((data) => console.log(data))
       .catch((error) => console.error("Error:", error));
+  },
+
+  async searchFootPackage() {
+    let link = `${window.location.origin}/game/index.php`;
+    let htmlText = await fetch(
+      `${link}?mod=packages&f=7&sh=${urlParams.get("sh")}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+    if (!htmlText) return [];
+
+    // Analiza el HTML
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+    const packageItems = doc.getElementsByClassName("packageItem");
+
+    // Convierte la colección HTML en un array y filtra los que contienen el texto "Mercado" en el hijo especificado
+    const items = Array.from(packageItems);
+    return items[0].children[0].value;
   },
 };

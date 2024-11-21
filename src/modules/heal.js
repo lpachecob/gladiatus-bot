@@ -85,6 +85,7 @@ const heal = {
           window.location.reload(); // Recargar la página
         }
       }, 1000); // Intervalo de 1 segundo
+      return;
     }
 
     if (!store.data.heal.enable) {
@@ -126,12 +127,23 @@ const heal = {
       document.getElementsByClassName("ui-draggable")
     ).filter((item) => item.hasAttribute("data-vitality"))[0];
     const dropTarget = document.getElementsByClassName("ui-droppable")[0];
-
+    console.log(foodItem);
     if (foodItem) {
       this.simulateDragAndDrop(foodItem, dropTarget);
     } else {
-      statusLog.innerText = "Sin comida...";
+      await this.getFootFromPackages();
       await this.buyFood();
+    }
+  },
+
+  async getFootFromPackages() {
+    statusLog.innerText = "Buscando comida en paquetes...";
+    const formId = await info.searchFootPackage();
+    console.log("formId", formId);
+    if (formId) {
+      await info.collectPackage(formId, { x: 2, y: 1 }).then(() => {
+        window.location.reload();
+      });
     }
   },
 
@@ -139,19 +151,23 @@ const heal = {
     if (store.data.heal.buyFood) {
       const goldValElement = document.getElementById("sstat_gold_val");
       const goldValue = parseFloat(
-        goldValElement.textContent.replace(".", "").replace(",", ".")
+        goldValElement.textContent.replace(/\./g, "").replace(",", ".")
       );
       statusLog.innerText = "Comprando comida...";
       const foodItem = await info.searchFoodInVendor();
+      console.log("foodItem", foodItem);
       let workClothes = await info.getWorkClothesCount();
 
-      if (!foodItem && store.data.heal.useCloths && workClothes > 0) {
+      console.log(!foodItem, store.data.heal.useCloths, workClothes > 0);
+
+      if (store.data.heal.useCloths && workClothes > 0) {
         statusLog.innerText = "Actualizando vendedor...";
         info.refreshVendor();
-      } else {
-        // store.data.heal.enable = false;
+      } else if (!foodItem) {
+        store.data.heal.enable = false;
         store.data.heal.timeOut = 40;
         setTimeout(() => window.location.reload(), 1000);
+        return;
       }
 
       const priceGold = foodItem.getAttribute("data-price-gold");
