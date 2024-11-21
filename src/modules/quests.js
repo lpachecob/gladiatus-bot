@@ -33,13 +33,14 @@ const quests = {
               index
             ]
         );
+        console.log(questList);
         let missionCount = 0;
         questList.forEach((quest) => {
           Array.from(quest.children).forEach((element) => {
             const links = element.querySelectorAll("a");
             Array.from(links).forEach((link) => {
-              missionCount++;
               if (!link.classList.contains("quest_slot_button_cancel")) {
+                missionCount++;
                 link.click();
               }
             });
