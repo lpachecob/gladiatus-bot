@@ -781,6 +781,6 @@ const info = {
 
     // Convierte la colección HTML en un array y filtra los que contienen el texto "Mercado" en el hijo especificado
     const items = Array.from(packageItems);
-    return items[0].children[0].value;
+    return items?.[0]?.children?.[0]?.value || null;
   },
 };
