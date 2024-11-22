@@ -779,8 +779,194 @@ const info = {
     let doc = parser.parseFromString(htmlText, "text/html");
     const packageItems = doc.getElementsByClassName("packageItem");
 
-    // Convierte la colección HTML en un array y filtra los que contienen el texto "Mercado" en el hijo especificado
     const items = Array.from(packageItems);
     return items?.[0]?.children?.[0]?.value || null;
+  },
+
+  async getForges() {
+    let link = `${window.location.origin}/game/index.php`;
+    let htmlText = await fetch(
+      `${link}?mod=forge&submod=smeltery&sh=${urlParams.get("sh")}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+    if (!htmlText) return [];
+
+    // Analiza el HTML
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+    // console.log(htmlText);
+
+    const regex = /var\s+slotsData\s*=\s*(\[[\s\S]*?\]);/;
+
+    // Busca el contenido del objeto
+    const match = htmlText.match(regex);
+
+    if (match && match[1]) {
+      // Convierte el texto capturado a un objeto JavaScript
+      const slotsData = JSON.parse(match[1]);
+      const closed = slotsData.filter((slot) => slot.state == undefined);
+      const finished = slotsData.filter(
+        (slot) => slot.state == "finished-succeeded"
+      );
+      return { closed, finished };
+    } else {
+      console.log("No se encontró slotsData en el texto.");
+    }
+    return { closed: [], finished: [] };
+  },
+  async storeResourcesFromSmelt(slot) {
+    let link = `${window.location.origin}/game/ajax.php`;
+
+    await fetch(`${link}?mod=forge&submod=storeSmelted`, {
+      method: "POST",
+
+      body: new URLSearchParams({
+        mod: "forge",
+        submod: "storeSmelted",
+        mode: "smelting",
+        slot: slot,
+        a: 1732285564634,
+        sh: urlParams.get("sh"),
+      }),
+    }).then((data) => window.location.reload());
+  },
+  async smeltResourcesFromSmelt(slot, itemId) {
+    let link = `${window.location.origin}/game/ajax.php`;
+
+    await fetch(`${link}?mod=forge&submod=rent`, {
+      method: "POST",
+
+      body: new URLSearchParams({
+        mod: "forge",
+        submod: "rent",
+        mode: "smelting",
+        slot: slot,
+        rent: 2,
+        item: itemId,
+        a: 1732285564634,
+        sh: urlParams.get("sh"),
+      }),
+    }).then((data) => window.location.reload());
+  },
+  async getItemForSmelt() {
+    let link = `${window.location.origin}/game/index.php`;
+    let htmlText = await fetch(
+      `${link}?mod=forge&submod=smeltery&sh=${urlParams.get("sh")}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+    if (!htmlText) return [];
+
+    const regex = /JSON\.parse\(\s*'(\[.*?\])'\s*\)/s;
+    const match = htmlText.match(regex);
+
+    if (match) {
+      const jsonString = match[1]; // Extraemos el JSON como cadena
+      const jsonObject = JSON.parse(jsonString); // Convertimos a objeto JavaScript
+      // Filtrar los elementos que cumplen con las condiciones
+      let encontradoItemId = null; // Variable para almacenar el primer itemId encontrado
+
+      jsonObject[0].forEach((item) => {
+        if (encontradoItemId !== null) return; // Salir del ciclo si ya encontramos un itemId
+
+        // Crear un nuevo documento a partir del string HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(item, "text/html");
+
+        // Seleccionar el primer elemento div del documento
+        const div = doc.body.firstChild;
+
+        // Obtener los valores de los atributos
+        const contentType = parseInt(
+          div.getAttribute("data-content-type").replace(/\\"/g, ""),
+          10
+        );
+        const contentSize = parseInt(
+          div.getAttribute("data-content-size").replace(/\\"/g, ""),
+          10
+        );
+
+        // Obtener el itemId
+        const itemId = div.getAttribute("data-item-id").replace(/\\"/g, "");
+
+        // Comprobar las condiciones
+        if (contentType !== 64 && contentSize >= 2) {
+          encontradoItemId = itemId; // Asignar el itemId si las condiciones se cumplen
+        }
+      });
+
+      return encontradoItemId;
+    } else {
+      console.error("No se encontró el JSON en el texto proporcionado.");
+    }
+    return null;
+  },
+  async getItemForSmeltInPackages() {
+    smeltingBagItems = false;
+
+    let link = `${window.location.origin}/game/index.php`;
+    let htmlText = await fetch(
+      `${link}?mod=packages&f=0&fq=-1&qry=&page=1&sh=${urlParams.get("sh")}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+    if (!htmlText) return [];
+
+    // Analiza el HTML
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+    const packageItems = doc.getElementsByClassName("packageItem");
+
+    const itemsWithoutMercado = Array.from(packageItems).filter((item) => {
+      // Encuentra el hijo con clase "sender ellipsis"
+      const senderEllipsis = item.querySelector(".sender.ellipsis");
+
+      // Verifica si el hijo existe y si su texto incluye "Mercado"
+      return senderEllipsis && !senderEllipsis.innerText.includes("Mercado");
+    });
+
+    let itemFormValue = itemsWithoutMercado.find(
+      (element) =>
+        element.children[2].children[0].getAttribute("data-content-size") >= 2
+    )?.children[0].value;
+
+    if (itemFormValue) {
+      smeltingBagItems = true;
+    }
+    return itemFormValue;
   },
 };

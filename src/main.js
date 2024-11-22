@@ -4,6 +4,8 @@ const urlParams = new URLSearchParams(queryString);
 let healing = false;
 let savingGold = false;
 let checkQuests = true;
+let smelting = false;
+let smeltingBagItems = false;
 
 if (localStorage.gtools) {
   store.init();
@@ -93,8 +95,12 @@ const gTools = {
         await heal.start().then(() => {
           healing = false;
         });
+      if (!healing && !savingGold)
+        await smelt.start().then(() => {
+          // smelting = false;
+        });
 
-      if (!healing && !savingGold) {
+      if (!healing && !savingGold && !smelting) {
         setTimeout(() => {
           expedition.start();
           info.sleep(1000);
@@ -137,6 +143,7 @@ const gTools = {
     arena.menu();
     turma.menu();
     eventExpedition.menu();
+    smelt.menu();
     // packages.init();
     menu.start(() => {
       player.initPlayer();

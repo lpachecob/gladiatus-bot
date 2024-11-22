@@ -33,7 +33,8 @@
         "/src/modules/saveGold.js",
         "/src/modules/eventExpedition.js",
         "/src/modules/simulator/request_playerData.js",
-        "/src/modules/simulator/getStatsPlayer.js"
+        "/src/modules/simulator/getStatsPlayer.js",
+        "/src/modules/smelt.js"
       ],
       "run_at": "document_start",
       "all_frames": true
