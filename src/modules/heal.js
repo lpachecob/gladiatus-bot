@@ -164,7 +164,7 @@ const heal = {
         statusLog.innerText = "Actualizando vendedor...";
         info.refreshVendor();
       } else if (!foodItem) {
-        store.data.heal.enable = false;
+        // store.data.heal.enable = false;
         store.data.heal.timeOut = 40;
         setTimeout(() => window.location.reload(), 1000);
         return;
