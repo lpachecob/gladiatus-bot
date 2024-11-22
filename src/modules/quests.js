@@ -34,18 +34,26 @@ const quests = {
             ]
         );
         let missionCount = 0;
+
         questList.forEach((quest) => {
           Array.from(quest.children).forEach((element) => {
             const links = element.querySelectorAll("a");
             Array.from(links).forEach((link) => {
-              if (!link.classList.contains("quest_slot_button_cancel")) {
-                missionCount++;
-                link.click();
+              let hasReward = link.previousElementSibling.children[6].children;
+              if (hasReward.length > 0) {
+                if (
+                  !link.classList.contains("quest_slot_button_cancel") &&
+                  hasReward[0].outerHTML.includes("En uso: Cura")
+                ) {
+                  missionCount++;
+                  link.click();
+                }
               }
             });
           });
         });
-        if (missionCount <= 1) {
+        info.sleep(2000);
+        if (missionCount < 1) {
           document.getElementById("quest_footer_reroll").children[0].click();
         }
       }

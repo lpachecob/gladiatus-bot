@@ -127,7 +127,6 @@ const heal = {
       document.getElementsByClassName("ui-draggable")
     ).filter((item) => item.hasAttribute("data-vitality"))[0];
     const dropTarget = document.getElementsByClassName("ui-droppable")[0];
-    console.log(foodItem);
     if (foodItem) {
       this.simulateDragAndDrop(foodItem, dropTarget);
     } else {
@@ -139,7 +138,6 @@ const heal = {
   async getFootFromPackages() {
     statusLog.innerText = "Buscando comida en paquetes...";
     const formId = await info.searchFootPackage();
-    console.log("formId", formId);
     if (formId) {
       await info.collectPackage(formId, { x: 2, y: 1 }).then(() => {
         window.location.reload();
@@ -155,10 +153,7 @@ const heal = {
       );
       statusLog.innerText = "Comprando comida...";
       const foodItem = await info.searchFoodInVendor();
-      console.log("foodItem", foodItem);
       let workClothes = await info.getWorkClothesCount();
-
-      console.log(!foodItem, store.data.heal.useCloths, workClothes > 0);
 
       if (store.data.heal.useCloths && workClothes > 0) {
         statusLog.innerText = "Actualizando vendedor...";

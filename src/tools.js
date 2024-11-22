@@ -436,9 +436,7 @@ const info = {
         }
         return response.text();
       })
-      .then((data) => {
-        // console.log(data);
-      })
+      .then((data) => {})
       .catch((error) => {
         console.error("Hubo un error con el fetch:", error);
       });
@@ -593,6 +591,7 @@ const info = {
         setTimeout(() => {
           document.getElementsByName("anbieten")[0].click();
         }, 3000);
+        this.sleep(5000);
       }
     });
   },
@@ -806,7 +805,6 @@ const info = {
     // Analiza el HTML
     let parser = new DOMParser();
     let doc = parser.parseFromString(htmlText, "text/html");
-    // console.log(htmlText);
 
     const regex = /var\s+slotsData\s*=\s*(\[[\s\S]*?\]);/;
 

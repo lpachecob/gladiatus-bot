@@ -26,7 +26,6 @@ const smelt = {
     statusLog.innerText = "Buscando forjas";
     let forges = await info.getForges();
     forges.finished.forEach(async (forge) => {
-      console.log(forge["forge_slots.slot"]);
       await info.storeResourcesFromSmelt(forge["forge_slots.slot"]);
     });
 
