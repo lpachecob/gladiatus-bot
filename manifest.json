@@ -2,15 +2,15 @@
   "name": "Gladiatus Tools",
   "version": "0.1.0",
   "description": "Help to do Things",
-  "author": "Nephtus",
+  "author": "LxE",
   "background": {
-    "scripts": [
-      "/src/resources/libraries/jquery-3.5.1.min.js",
-      "/src/background.js"
-    ],
-    "persistent": false
+    "service_worker": "/src/background.js"
   },
   "permissions": ["storage", "alarms"],
+  "host_permissions": [
+    "*://*.gladiatus.gameforge.com/game/index.php*",
+    "*://lobby.gladiatus.gameforge.com/*"
+  ],
   "content_scripts": [
     {
       "matches": [
@@ -19,8 +19,8 @@
       ],
       "js": [
         "/src/resources/libraries/jquery-3.5.1.min.js",
-        "/src/loader.js",
         "/src/tools.js",
+        "/src/loader.js",
         "/src/main.js",
         "/src/modules/menu.js",
         "/src/modules/packages.js",
@@ -47,6 +47,11 @@
     "48": "logos/nLogo48.png",
     "128": "logos/nLogo128.png"
   },
-  "web_accessible_resources": ["src/*"],
-  "manifest_version": 2
+  "web_accessible_resources": [
+    {
+      "resources": ["src/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "manifest_version": 3
 }

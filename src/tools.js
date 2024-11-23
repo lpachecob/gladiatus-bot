@@ -1,4 +1,5 @@
-const Browser = typeof browser === "undefined" ? chrome : browser;
+// const Browser = typeof browser === "undefined" ? chrome : browser;
+const Browser = typeof browser !== "undefined" ? browser : chrome;
 const manifest = Browser.runtime.getManifest();
 const store = {
   init: function () {
@@ -291,7 +292,7 @@ const info = {
     description: manifest.description,
     version: manifest.version,
     extension: Browser.runtime.id,
-    folder: Browser.extension.getURL("src"),
+    folder: Browser.runtime.getURL("src"),
   },
   player: {},
   tabId: 0,
