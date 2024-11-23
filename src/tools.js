@@ -92,6 +92,7 @@ let storeDefault = {
     buyFood: false,
     useCloths: false,
     timeOut: 0,
+    healing: false,
   },
   underworld: {
     enable: false,
@@ -142,6 +143,7 @@ let storeDefault = {
   },
   gold: {
     enable: false,
+    savingGold: false,
     timeOut: 0,
     method: 0,
     goldMax: 0,
@@ -582,24 +584,30 @@ const info = {
         tempItemData === tempItemStorage &&
         tempItemData2 === tempItemStorage2
       ) {
-        // sellBox.appendChild(element);
         this.moverParaVender(element, sellBox);
-        setTimeout(() => {
-          priceBox.value = price;
-          time.selectedIndex = 2;
-        }, 2000);
 
-        this.sleep(2000);
+        // Esperar 1 segundo antes de continuar
+        await this.sleep(1000);
+
+        statusLog.innerText = "Colocando precio: " + price;
+        priceBox.value = price;
+        statusLog.innerText = "Colocando tiempo: 24h";
+        time.selectedIndex = 2;
+
+        statusLog.innerText = "Vendiendo en: 2";
+        await this.sleep(1000);
+        statusLog.innerText = "Vendiendo en: 1";
+        await this.sleep(1000);
+
         statusLog.innerText = "Vendiendo Rotativo";
         document.getElementsByName("anbieten")[0].click();
         document.getElementsByName("anbieten")[0].click();
         document.getElementsByName("anbieten")[0].click();
         document.getElementsByName("anbieten")[0].click();
-
-        this.sleep(5000);
       }
     });
   },
+
   moverParaVender(item, destino) {
     const objetivoRect = destino.getBoundingClientRect();
     const objetivoX = objetivoRect.left + window.pageXOffset;

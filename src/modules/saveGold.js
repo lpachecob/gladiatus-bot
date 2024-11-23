@@ -96,7 +96,6 @@ const saveGold = {
       for (const element of store.data.gold.packagesPurchased) {
         statusLog.innerText = "Preparando venta";
         await info.sellPackage(element.name, element.price);
-        await info.sleep(5000);
       }
       store.data.gold.packagesPurchased = [];
       statusLog.innerText = "Rotativo vendido";
@@ -123,7 +122,18 @@ const saveGold = {
         }/game/index.php?mod=guildMarket&sh=${urlParams.get("sh")}`;
       }
     };
+
+    console.log(
+      "iniciando guardado: store.data.gold.enable, store.data.gold.timeOut, store.data.gold.enable && store.data.gold.timeOut <= 0",
+      store.data.gold.enable,
+      store.data.gold.timeOut,
+      store.data.gold.enable && store.data.gold.timeOut <= 0
+    );
     if (store.data.gold.enable && store.data.gold.timeOut <= 0) {
+      console.log(
+        "verificando si hay rotativos pendientes",
+        store.data.gold.packagesPurchased.length
+      );
       if (store.data.gold.packagesPurchased.length > 0) {
         savingGold = true;
         statusLog.innerText = "Vendiendo rotativos pendientes";
@@ -131,6 +141,10 @@ const saveGold = {
         await sellPackages();
       }
 
+      console.log(
+        "verificando si el oro es mayor al minimo y al hold",
+        goldIsHigherThanMinAndHold
+      );
       if (goldIsHigherThanMinAndHold) {
         savingGold = true;
         statusLog.innerText = "Comprando rotativo";
@@ -160,6 +174,10 @@ const saveGold = {
       }
       await collectPackages();
 
+      console.log(
+        "verificando hay rotativos pendientes",
+        store.data.gold.packagesPurchased.length
+      );
       if (store.data.gold.packagesPurchased.length == 0) {
         statusLog.innerText = "Sin rotativos pendientes";
         savingGold = false;
