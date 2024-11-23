@@ -94,9 +94,9 @@ const saveGold = {
     // Acciones comunes de venta
     const sellPackages = async () => {
       for (const element of store.data.gold.packagesPurchased) {
-        statusLog.innerText = "Vendiendo Rotativo";
+        statusLog.innerText = "Preparando venta";
         await info.sellPackage(element.name, element.price);
-        await info.sleep(2000);
+        await info.sleep(5000);
       }
       store.data.gold.packagesPurchased = [];
       statusLog.innerText = "Rotativo vendido";

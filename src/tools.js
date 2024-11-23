@@ -588,9 +588,14 @@ const info = {
           priceBox.value = price;
           time.selectedIndex = 2;
         }, 2000);
-        setTimeout(() => {
-          document.getElementsByName("anbieten")[0].click();
-        }, 3000);
+
+        this.sleep(2000);
+        statusLog.innerText = "Vendiendo Rotativo";
+        document.getElementsByName("anbieten")[0].click();
+        document.getElementsByName("anbieten")[0].click();
+        document.getElementsByName("anbieten")[0].click();
+        document.getElementsByName("anbieten")[0].click();
+
         this.sleep(5000);
       }
     });
@@ -925,46 +930,56 @@ const info = {
   async getItemForSmeltInPackages() {
     smeltingBagItems = false;
 
-    let link = `${window.location.origin}/game/index.php`;
-    let htmlText = await fetch(
-      `${link}?mod=packages&f=0&fq=-1&qry=&page=1&sh=${urlParams.get("sh")}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const link = `${window.location.origin}/game/index.php`;
+    let itemFormValue;
+
+    const storages = ["f=5", "f=8", "f=4", "f=3", "f=2", "f=1"];
+
+    for (const category of storages) {
+      let htmlText = await fetch(
+        `${link}?mod=packages&${category}&fq=-1&qry=&page=1&sh=${urlParams.get(
+          "sh"
+        )}`,
+        {
+          method: "GET",
+          credentials: "include",
         }
-        return response.text();
-      })
-      .catch((error) => {
-        console.error("Hubo un error con el fetch:", error);
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+          return response.text();
+        })
+        .catch((error) => {
+          console.error("Hubo un error con el fetch:", error);
+          return null; // Retorna null si hay error
+        });
+
+      if (!htmlText) continue; // Salta al siguiente almacenamiento si no hay datos
+
+      // Analiza el HTML
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, "text/html");
+      const packageItems = doc.getElementsByClassName("packageItem");
+
+      const itemsWithoutMercado = Array.from(packageItems).filter((item) => {
+        const senderEllipsis = item.querySelector(".sender.ellipsis");
+        return senderEllipsis && !senderEllipsis.innerText.includes("Mercado");
       });
-    if (!htmlText) return [];
 
-    // Analiza el HTML
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(htmlText, "text/html");
-    const packageItems = doc.getElementsByClassName("packageItem");
+      itemFormValue = itemsWithoutMercado.find(
+        (element) =>
+          element.children[2].children[0].getAttribute("data-content-size") >= 2
+      )?.children[0].value;
 
-    const itemsWithoutMercado = Array.from(packageItems).filter((item) => {
-      // Encuentra el hijo con clase "sender ellipsis"
-      const senderEllipsis = item.querySelector(".sender.ellipsis");
-
-      // Verifica si el hijo existe y si su texto incluye "Mercado"
-      return senderEllipsis && !senderEllipsis.innerText.includes("Mercado");
-    });
-
-    let itemFormValue = itemsWithoutMercado.find(
-      (element) =>
-        element.children[2].children[0].getAttribute("data-content-size") >= 2
-    )?.children[0].value;
-
-    if (itemFormValue) {
-      smeltingBagItems = true;
+      if (itemFormValue) {
+        smeltingBagItems = true;
+        break; // Detiene la iteración si encontramos un valor
+      }
     }
-    return itemFormValue;
+
+    console.log(itemFormValue, "itemFormValue");
+    return itemFormValue || undefined; // Retorna undefined si no encuentra nada
   },
 };

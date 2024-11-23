@@ -34,7 +34,8 @@
         "/src/modules/eventExpedition.js",
         "/src/modules/simulator/request_playerData.js",
         "/src/modules/simulator/getStatsPlayer.js",
-        "/src/modules/smelt.js"
+        "/src/modules/smelt.js",
+        "/src/modules/underworld.js"
       ],
       "run_at": "document_start",
       "all_frames": true

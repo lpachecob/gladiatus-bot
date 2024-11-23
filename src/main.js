@@ -6,6 +6,7 @@ let savingGold = false;
 let checkQuests = true;
 let smelting = false;
 let smeltingBagItems = false;
+let inUnderworld = false;
 
 if (localStorage.gtools) {
   store.init();
@@ -91,7 +92,7 @@ const gTools = {
 
     if (store.data.bot.enable) {
       await saveGold.start();
-      if (!savingGold)
+      if (!savingGold && !inUnderworld)
         await heal.start().then(() => {
           healing = false;
         });
@@ -102,10 +103,13 @@ const gTools = {
 
       if (!healing && !savingGold && !smelting) {
         setTimeout(() => {
-          expedition.start();
-          info.sleep(1000);
-          arena.start();
-          info.sleep(1000);
+          underworld.start();
+          if (!inUnderworld) {
+            expedition.start();
+            info.sleep(1000);
+            arena.start();
+            info.sleep(1000);
+          }
           turma.start();
           info.sleep(1000);
           eventExpedition.start();
@@ -127,6 +131,9 @@ const gTools = {
   },
 
   preload() {
+    inUnderworld = document
+      .getElementById("wrapper_game")
+      .classList.contains("underworld");
     let link = `${window.location.origin}/game/index.php`;
     jQuery.get(`${link}?mod=overview&sh=${urlParams.get("sh")}`, (p) => {
       store.data.player.name = jQuery(p).find(".playername_achievement")[0]
@@ -144,6 +151,7 @@ const gTools = {
     turma.menu();
     eventExpedition.menu();
     smelt.menu();
+    underworld.menu();
     // packages.init();
     menu.start(() => {
       player.initPlayer();
