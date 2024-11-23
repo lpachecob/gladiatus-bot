@@ -21,6 +21,10 @@ const underworld = {
     );
   },
   start() {
+    if (!inUnderworld) {
+      return;
+    }
+
     if (store.data.underworld.enable) {
       if (player.health < store.data.heal.hpMin) {
         return;
