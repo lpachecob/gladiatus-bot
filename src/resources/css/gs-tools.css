@@ -121,3 +121,22 @@ g-tools-status {
 .gt-menu-switch input:checked + .gt-menu-slider:before {
   transform: translateX(11px);
 }
+.gt-notification-success {
+  background-color: #51a351;
+  border: 1px solid #418141;
+}
+
+.gt-notification-box {
+  position: absolute;
+  top: 6px;
+  right: -339px;
+  z-index: 520;
+  cursor: pointer;
+  background-position: 15px center;
+  background-repeat: no-repeat;
+  color: #ffffff;
+  margin: 0 0 6px;
+  opacity: 0.9;
+  width: 231px;
+  white-space: pre-wrap;
+}

@@ -85,8 +85,9 @@ const gTools = {
     );
   },
   async main() {
-    await info.checkVersion();
-    console.log(store.data.bot.remoteVersion);
+    let checkVersion = await info.isVersionOutdated();
+    let notifications = document.getElementById("gt-notifications");
+    notifications.style.display = checkVersion ? "" : "none";
     const lootButton = document.getElementsByClassName("loot-button")[2];
     if (lootButton) {
       lootButton.click();

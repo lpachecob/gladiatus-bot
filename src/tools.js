@@ -313,6 +313,24 @@ const info = {
       })
       .catch((error) => console.error("Error al verificar la versión:", error));
   },
+  async isVersionOutdated() {
+    await info.checkVersion();
+
+    let currentVersion = info.extension.version,
+      remoteVersion = store.data.bot.remoteVersion;
+    const currentParts = currentVersion.split(".").map(Number); // Convierte "0.1.0" a [0, 1, 0]
+    const remoteParts = remoteVersion.split(".").map(Number); // Convierte "1.0.0" a [1, 0, 0]
+
+    for (let i = 0; i < currentParts.length; i++) {
+      if (currentParts[i] < remoteParts[i]) {
+        return true; // La versión actual es inferior
+      } else if (currentParts[i] > remoteParts[i]) {
+        return false; // La versión actual es superior
+      }
+    }
+
+    return false; // Las versiones son iguales
+  },
 
   player: {},
   tabId: 0,
