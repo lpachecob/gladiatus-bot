@@ -85,6 +85,8 @@ const gTools = {
     );
   },
   async main() {
+    await info.checkVersion();
+    console.log(store.data.bot.remoteVersion);
     const lootButton = document.getElementsByClassName("loot-button")[2];
     if (lootButton) {
       lootButton.click();
@@ -132,7 +134,7 @@ const gTools = {
     }
   },
 
-  preload() {
+  async preload() {
     inUnderworld = document
       .getElementById("wrapper_game")
       .classList.contains("underworld");

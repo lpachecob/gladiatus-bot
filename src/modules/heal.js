@@ -191,9 +191,10 @@ const heal = {
 
     this.dispatchMouseEvent(dropTarget, "mouseup", centroX, centroY);
     statusLog.innerText = "Soltando comida...";
-
-    statusLog.innerText = "Recargando página...";
-    window.location.reload();
+    info.sleep(1000).then(() => {
+      statusLog.innerText = "Recargando página...";
+      window.location.reload();
+    });
   },
 
   calculateDropPosition(dragElement, dropTarget) {

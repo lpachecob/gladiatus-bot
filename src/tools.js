@@ -1,6 +1,7 @@
 // const Browser = typeof browser === "undefined" ? chrome : browser;
 const Browser = typeof browser !== "undefined" ? browser : chrome;
 const manifest = Browser.runtime.getManifest();
+
 const store = {
   init: function () {
     this.data = JSON.parse(localStorage.getItem("gtools")) || {};
@@ -81,6 +82,7 @@ let storeDefault = {
     equipCostume: false,
     arenaCostume: 1,
     turmaCostume: 5,
+    remoteVersion: "",
   },
   quests: {
     enable: false,
@@ -294,6 +296,24 @@ const info = {
     extension: Browser.runtime.id,
     folder: Browser.runtime.getURL("src"),
   },
+
+  async checkVersion() {
+    store.data.bot.remoteVersion = "";
+    await fetch(
+      "https://raw.githubusercontent.com/lpachecob/gladiatus-bot/main/manifest.json"
+    )
+      .then((response) => {
+        if (!response.ok)
+          throw new Error("No se pudo obtener el archivo remoto");
+        return response.json();
+      })
+      .then((manifest) => {
+        const remoteVersion = manifest.version;
+        store.data.bot.remoteVersion = remoteVersion;
+      })
+      .catch((error) => console.error("Error al verificar la versión:", error));
+  },
+
   player: {},
   tabId: 0,
 
@@ -399,11 +419,13 @@ const info = {
       );
       const goldValElement = document.getElementById("sstat_gold_val");
       const goldValString = goldValElement.textContent;
-      const goldValue = parseFloat(
-        goldValElement.textContent
-          .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
-          .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
-      );
+      const goldValue =
+        parseFloat(
+          goldValElement.textContent
+            .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
+            .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
+        ) * 1.04;
+      console.log(goldValue);
       if (
         price < parseInt(store.data.gold.goldMin) ||
         price > parseInt(store.data.gold.goldMax) ||
@@ -422,10 +444,10 @@ const info = {
     }
     return items;
   },
-  buyGuildMarkedItem(buyId) {
+  async buyGuildMarkedItem(buyId) {
     let link = `${window.location.origin}/game/index.php`;
 
-    fetch(`${link}?mod=guildMarket&sh=${urlParams.get("sh")}`, {
+    await fetch(`${link}?mod=guildMarket&sh=${urlParams.get("sh")}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
