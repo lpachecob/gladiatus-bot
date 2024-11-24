@@ -95,6 +95,12 @@ const saveGold = {
     const sellPackages = async () => {
       for (const element of store.data.gold.packagesPurchased) {
         statusLog.innerText = "Preparando venta";
+        const bags = Array.from(
+          document.getElementsByClassName("awesome-tabs")
+        ).filter((item) => item.hasAttribute("data-bag-number"));
+        statusLog.innerText = "Abriendo mochila...";
+        if (bags.length > 0) bags[0].click();
+        await info.sleep(1000);
         await info.sellPackage(element.name, element.price);
       }
       store.data.gold.packagesPurchased = [];
@@ -155,10 +161,11 @@ const saveGold = {
         statusLog.innerText = "Listando Rotativos";
         const guildMarkedList = await info.getGuildMarkedItems();
         if (guildMarkedList.length == 0) {
-          statusLog.innerText = "Sin rotativos listados";
+          console.log("escape 1");
           savingGold = false;
+          statusLog.innerText = "Sin rotativos listados";
           store.data.gold.timeOut = 40;
-          window.location.reload();
+          return;
         }
         statusLog.innerText = "Rotativos listados";
         await info.sleep(2000);
@@ -179,8 +186,10 @@ const saveGold = {
         store.data.gold.packagesPurchased.length
       );
       if (store.data.gold.packagesPurchased.length == 0) {
-        statusLog.innerText = "Sin rotativos pendientes";
+        console.log("escape 1");
         savingGold = false;
+        store.data.gold.timeOut = 40;
+        statusLog.innerText = "Sin rotativos pendientes";
       }
     }
   },

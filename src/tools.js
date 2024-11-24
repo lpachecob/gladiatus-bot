@@ -488,7 +488,7 @@ const info = {
     let link = `${window.location.origin}/game/index.php`;
 
     let htmlText = await fetch(
-      `${link}?mod=packages&f=0&fq=-1&qry=&page=1&sh=${urlParams.get("sh")}`,
+      `${link}?mod=packages&f=9&fq=-1&qry=&page=1&sh=${urlParams.get("sh")}`,
       {
         method: "GET",
         credentials: "include",
