@@ -87,6 +87,7 @@ let storeDefault = {
   quests: {
     enable: false,
     timeOut: 0,
+    searchFood: false,
   },
   heal: {
     enable: false,
