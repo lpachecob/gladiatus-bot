@@ -140,11 +140,15 @@ const saveGold = {
         "verificando si hay rotativos pendientes",
         store.data.gold.packagesPurchased.length
       );
+      console.log(
+        "Rotativos pendientes" + store.data.gold.packagesPurchased.length
+      );
       if (store.data.gold.packagesPurchased.length > 0) {
         savingGold = true;
         statusLog.innerText = "Vendiendo rotativos pendientes";
         openMenu();
         await sellPackages();
+        await info.sleep(2000);
       }
 
       console.log(
@@ -190,6 +194,14 @@ const saveGold = {
         savingGold = false;
         store.data.gold.timeOut = 40;
         statusLog.innerText = "Sin rotativos pendientes";
+        statusLog.innerText = "Recargando en 3";
+        await info.sleep(2000);
+        statusLog.innerText = "Recargando en 2";
+        await info.sleep(2000);
+        statusLog.innerText = "Recargando en 1";
+        await info.sleep(2000);
+        statusLog.innerText = "Recargando...";
+        window.location.reload();
       }
     }
   },

@@ -94,7 +94,7 @@ const gTools = {
     }
 
     if (store.data.bot.enable) {
-      saveGold.start();
+      await saveGold.start();
       info.sleep(3000);
       if (!savingGold && !inUnderworld)
         await heal.start().then(() => {
@@ -102,19 +102,15 @@ const gTools = {
         });
 
       if (!healing && !savingGold && !smelting) {
-        setTimeout(() => {
+        setTimeout(async () => {
           underworld.start();
           if (!inUnderworld) {
-            expedition.start();
-            info.sleep(1000);
-            arena.start();
-            info.sleep(1000);
+            await expedition.start();
+            await arena.start();
           }
-          turma.start();
-          info.sleep(1000);
-          eventExpedition.start();
-          info.sleep(1000);
-          quests.start();
+          await turma.start();
+          await eventExpedition.start();
+          await quests.start();
         }, 2000);
       }
       if (!healing && !savingGold)
