@@ -125,7 +125,9 @@ const saveGold = {
       if (mod !== "guildMarket") {
         window.location.href = `${
           window.location.origin
-        }/game/index.php?mod=guildMarket&sh=${urlParams.get("sh")}`;
+        }/game/index.php?mod=guildMarket&fl=0&fq=-1&f=0&qry=&seller=&s=p&p=1&sh=${urlParams.get(
+          "sh"
+        )}`;
       }
     };
 
@@ -135,6 +137,7 @@ const saveGold = {
       store.data.gold.timeOut,
       store.data.gold.enable && store.data.gold.timeOut <= 0
     );
+
     if (store.data.gold.enable && store.data.gold.timeOut <= 0) {
       console.log(
         "verificando si hay rotativos pendientes",
@@ -143,6 +146,7 @@ const saveGold = {
       console.log(
         "Rotativos pendientes" + store.data.gold.packagesPurchased.length
       );
+
       if (store.data.gold.packagesPurchased.length > 0) {
         savingGold = true;
         statusLog.innerText = "Vendiendo rotativos pendientes";
@@ -157,10 +161,15 @@ const saveGold = {
       );
       if (goldIsHigherThanMinAndHold) {
         savingGold = true;
-        statusLog.innerText = "Comprando rotativo";
 
         openMenu();
         document.getElementById("inventory_nav").children[0].click();
+
+        statusLog.innerText = "Verificando paquetes atascados en inventario";
+        await info.veryfyIfHaveBrokenPackages();
+        await info.sleep(2000);
+
+        statusLog.innerText = "Comprando rotativo";
 
         statusLog.innerText = "Listando Rotativos";
         const guildMarkedList = await info.getGuildMarkedItems();
@@ -190,7 +199,7 @@ const saveGold = {
         store.data.gold.packagesPurchased.length
       );
       if (store.data.gold.packagesPurchased.length == 0) {
-        console.log("escape 1");
+        console.log("escape 2");
         savingGold = false;
         store.data.gold.timeOut = 40;
         statusLog.innerText = "Sin rotativos pendientes";

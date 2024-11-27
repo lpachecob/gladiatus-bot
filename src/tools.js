@@ -563,31 +563,6 @@ const info = {
     }
   },
   async sellPackage(tooltipText, price) {
-    let link = `${window.location.origin}/game/index.php`;
-
-    let htmlText = await fetch(
-      `${link}?mod=guildMarket&&sh=${urlParams.get("sh")}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        return response.text();
-      })
-      .catch((error) => {
-        console.error("Hubo un error con el fetch:", error);
-      });
-
-    if (!htmlText) return [];
-
-    // Analiza el HTML
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(htmlText, "text/html");
-
     const sellBox = document.getElementById("market_sell").children[0];
     const inventory = Array.from(document.getElementById("inv").children);
     const priceBox = document.getElementById("preis");
@@ -649,7 +624,64 @@ const info = {
       }
     });
   },
+  async veryfyIfHaveBrokenPackages() {
+    const sellBox = document.getElementById("market_sell").children[0];
+    const inventory = Array.from(document.getElementById("inv").children);
+    const priceBox = document.getElementById("preis");
+    const time = document.getElementById("dauer");
 
+    // let itemStorage = tooltipText.split(",");
+    inventory.forEach(async (element) => {
+      let itemData = element.getAttribute("data-tooltip").split(",");
+
+      let tempItemData = itemData[0];
+      let tempItemData2 = itemData[2];
+
+      console.log(tempItemData);
+      console.log(tempItemData2);
+
+      // Recorre los elementos para procesarlos de tres en tres (form, input, tr)
+      let marketTable = document.getElementById("market_table");
+      let tbody = marketTable.children[0].children[0];
+      let elements = Array.from(tbody.children);
+
+      for (let i = 1; i < elements.length; i += 10) {
+        let tooltipText =
+          elements[i + 9].children[0].children[0].getAttribute("data-tooltip");
+        let itemName = tooltipText.split(",");
+
+        let price = parseInt(
+          elements[i + 9].children[2].textContent.trim().replace(".", "")
+        );
+
+        if (itemName[0] == tempItemData) {
+          console.log("Encontrado");
+          console.log(itemName[0]);
+          console.log(price);
+          this.moverParaVender(element, sellBox);
+          await this.sleep(1000);
+
+          statusLog.innerText = "Colocando precio: " + price;
+          priceBox.value = price;
+          statusLog.innerText = "Colocando tiempo: 24h";
+          time.selectedIndex = 2;
+
+          statusLog.innerText = "Vendiendo en: 2";
+          await this.sleep(1000);
+          statusLog.innerText = "Vendiendo en: 1";
+          await this.sleep(1000);
+
+          statusLog.innerText = "Vendiendo Rotativo";
+          document.getElementsByName("anbieten")[0].click();
+          document.getElementsByName("anbieten")[0].click();
+          document.getElementsByName("anbieten")[0].click();
+          document.getElementsByName("anbieten")[0].click();
+
+          break;
+        }
+      }
+    });
+  },
   moverParaVender(item, destino) {
     const objetivoRect = destino.getBoundingClientRect();
     const objetivoX = objetivoRect.left + window.pageXOffset;
