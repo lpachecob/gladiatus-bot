@@ -438,17 +438,16 @@ const info = {
       );
       const goldValElement = document.getElementById("sstat_gold_val");
       const goldValString = goldValElement.textContent;
-      const goldValue =
-        parseFloat(
-          goldValElement.textContent
-            .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
-            .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
-        ) * 1.04;
+      const goldValue = parseFloat(
+        goldValElement.textContent
+          .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
+          .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
+      );
       console.log(goldValue);
       if (
         price < parseInt(store.data.gold.goldMin) ||
         price > parseInt(store.data.gold.goldMax) ||
-        price > goldValue
+        price * 1.04 > goldValue
       )
         continue;
 
