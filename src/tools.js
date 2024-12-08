@@ -433,9 +433,13 @@ const info = {
       let sellerName = elements[i + 9].children[1].textContent.trim();
       if (sellerName === store.data.player.name) continue;
 
-      let price = parseInt(
-        elements[i + 9].children[2].textContent.trim().replace(".", "")
+      console.log(
+        elements[i + 9].children[2].textContent.trim().replace(/\./g, "")
       );
+      let price = parseInt(
+        elements[i + 9].children[2].textContent.trim().replace(/\./g, "")
+      );
+
       const goldValElement = document.getElementById("sstat_gold_val");
       const goldValString = goldValElement.textContent;
       const goldValue = parseFloat(
@@ -443,22 +447,24 @@ const info = {
           .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
           .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
       );
-      console.log(goldValue);
+      console.log(
+        price,
+        goldValue,
+        price >= parseInt(store.data.gold.goldMin) && price * 1.04 <= goldValue
+      );
       if (
-        price < parseInt(store.data.gold.goldMin) ||
-        price > parseInt(store.data.gold.goldMax) ||
-        price * 1.04 > goldValue
-      )
-        continue;
-
-      // Crea un objeto con los datos de cada elemento
-      let item = {
-        buyId: elements[i + 1].value,
-        sellerName: sellerName,
-        price: price,
-        itemName: tooltipText,
-      };
-      items.push(item);
+        price >= parseInt(store.data.gold.goldMin) &&
+        price * 1.04 <= goldValue
+      ) {
+        // Crea un objeto con los datos de cada elemento
+        let item = {
+          buyId: elements[i + 1].value,
+          sellerName: sellerName,
+          price: price,
+          itemName: tooltipText,
+        };
+        items.push(item);
+      }
     }
     return items;
   },

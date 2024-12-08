@@ -177,7 +177,7 @@ const saveGold = {
           console.log("escape 1");
           savingGold = false;
           statusLog.innerText = "Sin rotativos listados";
-          store.data.gold.timeOut = 40;
+          store.data.gold.timeOut = 20;
           return;
         }
         statusLog.innerText = "Rotativos listados";
@@ -201,7 +201,7 @@ const saveGold = {
       if (store.data.gold.packagesPurchased.length == 0) {
         console.log("escape 2");
         savingGold = false;
-        store.data.gold.timeOut = 40;
+        store.data.gold.timeOut = 20;
         statusLog.innerText = "Sin rotativos pendientes";
         statusLog.innerText = "Recargando en 3";
         await info.sleep(2000);
