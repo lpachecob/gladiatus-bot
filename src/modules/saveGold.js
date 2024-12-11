@@ -152,10 +152,19 @@ const saveGold = {
         statusLog.innerText = "Comprando rotativo";
 
         statusLog.innerText = "Listando Rotativos";
-        const guildMarkedList = await [1, 2, 3].reduce(
-          async (prev, id) => (await prev) || info.getGuildMarkedItems(id),
-          Promise.resolve(null)
-        );
+        let totalPaginas =
+          parseInt(
+            document
+              .getElementsByClassName("standalone")[0]
+              .textContent.match(/Página\s+\d+\s+\/\s+(\d+)/)?.[1]
+          ) || 1;
+
+        let guildMarkedList = [];
+
+        for (let i = totalPaginas; i >= 1; i--) {
+          const data = await info.getGuildMarkedItems(i);
+          guildMarkedList = guildMarkedList.concat(data);
+        }
 
         if (guildMarkedList.length == 0) {
           console.log("escape 1");
