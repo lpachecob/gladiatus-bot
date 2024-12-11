@@ -80,15 +80,14 @@ const saveGold = {
     }
 
     const goldValElement = document.getElementById("sstat_gold_val");
-    const goldValue = parseFloat(
+    const goldValue = parseInt(
       goldValElement.textContent
         .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
-        .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
+        .replace(",", ".") // Reemplaza la coma (separador decimal) por
     );
     const mod = urlParams.get("mod");
-
     const goldIsHigherThanMinAndHold =
-      goldValue >
+      goldValue >=
       parseInt(store.data.gold.goldMin) + parseInt(store.data.gold.goldHold);
 
     // Acciones comunes de venta
@@ -131,22 +130,7 @@ const saveGold = {
       }
     };
 
-    console.log(
-      "iniciando guardado: store.data.gold.enable, store.data.gold.timeOut, store.data.gold.enable && store.data.gold.timeOut <= 0",
-      store.data.gold.enable,
-      store.data.gold.timeOut,
-      store.data.gold.enable && store.data.gold.timeOut <= 0
-    );
-
     if (store.data.gold.enable && store.data.gold.timeOut <= 0) {
-      console.log(
-        "verificando si hay rotativos pendientes",
-        store.data.gold.packagesPurchased.length
-      );
-      console.log(
-        "Rotativos pendientes" + store.data.gold.packagesPurchased.length
-      );
-
       if (store.data.gold.packagesPurchased.length > 0) {
         savingGold = true;
         statusLog.innerText = "Vendiendo rotativos pendientes";
@@ -155,10 +139,6 @@ const saveGold = {
         await info.sleep(2000);
       }
 
-      console.log(
-        "verificando si el oro es mayor al minimo y al hold",
-        goldIsHigherThanMinAndHold
-      );
       if (goldIsHigherThanMinAndHold) {
         savingGold = true;
 
@@ -172,7 +152,11 @@ const saveGold = {
         statusLog.innerText = "Comprando rotativo";
 
         statusLog.innerText = "Listando Rotativos";
-        const guildMarkedList = await info.getGuildMarkedItems();
+        const guildMarkedList = await [1, 2, 3].reduce(
+          async (prev, id) => (await prev) || info.getGuildMarkedItems(id),
+          Promise.resolve(null)
+        );
+
         if (guildMarkedList.length == 0) {
           console.log("escape 1");
           savingGold = false;
@@ -194,10 +178,6 @@ const saveGold = {
       }
       await collectPackages();
 
-      console.log(
-        "verificando hay rotativos pendientes",
-        store.data.gold.packagesPurchased.length
-      );
       if (store.data.gold.packagesPurchased.length == 0) {
         console.log("escape 2");
         savingGold = false;

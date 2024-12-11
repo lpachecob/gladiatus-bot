@@ -388,11 +388,11 @@ const info = {
       });
     return list;
   },
-  async getGuildMarkedItems() {
+  async getGuildMarkedItems(page = 1) {
     let link = `${window.location.origin}/game/index.php`;
 
     let htmlText = await fetch(
-      `${link}?mod=guildMarket&fl=0&fq=-1&f=0&qry=&seller=&s=p&p=1&sh=${urlParams.get(
+      `${link}?mod=guildMarket&fl=0&fq=-1&f=0&qry=&seller=&s=p&p=${page}&sh=${urlParams.get(
         "sh"
       )}`,
       {
@@ -433,9 +433,6 @@ const info = {
       let sellerName = elements[i + 9].children[1].textContent.trim();
       if (sellerName === store.data.player.name) continue;
 
-      console.log(
-        elements[i + 9].children[2].textContent.trim().replace(/\./g, "")
-      );
       let price = parseInt(
         elements[i + 9].children[2].textContent.trim().replace(/\./g, "")
       );
@@ -447,13 +444,10 @@ const info = {
           .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
           .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
       );
-      console.log(
-        price,
-        goldValue,
-        price >= parseInt(store.data.gold.goldMin) && price * 1.04 <= goldValue
-      );
+
       if (
         price >= parseInt(store.data.gold.goldMin) &&
+        price <= parseInt(store.data.gold.goldMax) &&
         price * 1.04 <= goldValue
       ) {
         // Crea un objeto con los datos de cada elemento
@@ -466,6 +460,9 @@ const info = {
         items.push(item);
       }
     }
+
+    items.sort((a, b) => b.price - a.price);
+
     return items;
   },
   async buyGuildMarkedItem(buyId) {
@@ -642,9 +639,6 @@ const info = {
       let tempItemData = itemData[0];
       let tempItemData2 = itemData[2];
 
-      console.log(tempItemData);
-      console.log(tempItemData2);
-
       // Recorre los elementos para procesarlos de tres en tres (form, input, tr)
       let marketTable = document.getElementById("market_table");
       let tbody = marketTable.children[0].children[0];
@@ -656,13 +650,10 @@ const info = {
         let itemName = tooltipText.split(",");
 
         let price = parseInt(
-          elements[i + 9].children[2].textContent.trim().replace(".", "")
+          elements[i + 9].children[2].textContent.trim().replace(/\./g, "")
         );
 
         if (itemName[0] == tempItemData) {
-          console.log("Encontrado");
-          console.log(itemName[0]);
-          console.log(price);
           this.moverParaVender(element, sellBox);
           await this.sleep(1000);
 
@@ -1066,7 +1057,6 @@ const info = {
       }
     }
 
-    console.log(itemFormValue, "itemFormValue");
     return itemFormValue || undefined; // Retorna undefined si no encuentra nada
   },
 };
