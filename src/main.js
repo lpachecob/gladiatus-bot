@@ -94,40 +94,44 @@ const gTools = {
     }
 
     if (store.data.bot.enable) {
-      await saveGold.start();
-      info.sleep(3000);
-      if (!savingGold && !inUnderworld)
-        await heal.start().then(() => {
-          healing = false;
-        });
+      await Promise.all([auction.start(), this.bot()]);
+    }
+  },
 
-      if (!healing && !savingGold && !smelting) {
-        setTimeout(async () => {
-          underworld.start();
-          if (!inUnderworld) {
-            await expedition.start();
-            await arena.start();
-          }
-          await turma.start();
-          await eventExpedition.start();
-          await quests.start();
-        }, 2000);
-      }
-      if (!healing && !savingGold)
-        await smelt.start().then(() => {
-          // smelting = false;
-        });
+  async bot() {
+    await saveGold.start();
+    info.sleep(3000);
+    if (!savingGold && !inUnderworld)
+      await heal.start().then(() => {
+        healing = false;
+      });
 
-      if (store.data.bot.refresh) {
-        Timer.setCountdownMessage(
-          store.data.bot.delay,
-          "Tiempo de espera: ",
-          statusLog,
-          () => {
-            window.location.reload();
-          }
-        );
-      }
+    if (!healing && !savingGold && !smelting) {
+      setTimeout(async () => {
+        underworld.start();
+        if (!inUnderworld) {
+          await expedition.start();
+          await arena.start();
+        }
+        await turma.start();
+        await eventExpedition.start();
+        await quests.start();
+      }, 2000);
+    }
+    if (!healing && !savingGold)
+      await smelt.start().then(() => {
+        // smelting = false;
+      });
+
+    if (store.data.bot.refresh) {
+      Timer.setCountdownMessage(
+        store.data.bot.delay,
+        "Tiempo de espera: ",
+        statusLog,
+        () => {
+          window.location.reload();
+        }
+      );
     }
   },
 
@@ -146,6 +150,7 @@ const gTools = {
     this.menu();
     saveGold.menu();
     quests.menu();
+    auction.menu();
     expedition.menu();
     heal.menu();
     arena.menu();

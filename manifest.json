@@ -1,6 +1,6 @@
 {
   "name": "Gladiatus Tools",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Help to do Things",
   "author": "LxE",
   "background": {
@@ -30,6 +30,7 @@
         "/src/modules/arena.js",
         "/src/modules/turma.js",
         "/src/modules/quests.js",
+        "/src/modules/auction.js",
         "/src/modules/saveGold.js",
         "/src/modules/eventExpedition.js",
         "/src/modules/simulator/request_playerData.js",

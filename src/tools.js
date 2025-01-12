@@ -190,6 +190,7 @@ let storeDefault = {
   auction: {
     enable: false,
     status: 0,
+    overbid: false,
     timeOut: 0,
     statusEnable: 4,
     bidMax: 0,
@@ -446,14 +447,7 @@ const info = {
           .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
           .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
       );
-      console.log(
-        price >= parseInt(store.data.gold.goldMin),
-        price <= parseInt(store.data.gold.goldMax),
-        price * 1.04 <= goldValue,
-        price >= parseInt(store.data.gold.goldMin) &&
-          price <= parseInt(store.data.gold.goldMax) &&
-          price * 1.04 <= goldValue
-      );
+
       if (
         price >= parseInt(store.data.gold.goldMin) &&
         price <= parseInt(store.data.gold.goldMax) &&
@@ -1168,5 +1162,147 @@ const info = {
     items.sort((a, b) => b.price - a.price);
 
     return items;
+  },
+  async getAuctionData() {
+    let link = `${window.location.origin}/game/index.php`;
+
+    let htmlText = await fetch(
+      `${link}?mod=auction&itemLevel=999&itemQuality=2&sh=${urlParams.get(
+        "sh"
+      )}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+
+    let auctionStatus = doc.getElementsByClassName("description_span_right")[0]
+      .textContent;
+
+    let auctionMinLevel = doc.querySelector('select[name="itemLevel"]')
+      .options[0].value;
+
+    if (!auctionStatus) return null;
+
+    return { auctionStatus, auctionMinLevel };
+  },
+  async getAuctionItems(auctionMinLevel) {
+    let link = `${window.location.origin}/game/index.php`;
+
+    let htmlText = await fetch(
+      `${link}?mod=auction&qry=&itemLevel=${auctionMinLevel}&itemType=7&itemQuality=-1&&sh=${urlParams.get(
+        "sh"
+      )}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+
+    const forms = doc.querySelectorAll("form");
+
+    const formsFiltered = [];
+    forms.forEach((form) => {
+      const nombreJugador = form.querySelector("a span")?.textContent?.trim();
+
+      // Si el filtro está activado y tiene un nombre, lo excluimos
+      if (store.data.auction.overbid && nombreJugador) {
+        // Si tiene nombre y el filtro está activado, no lo agregamos
+        console.log(`Formulario excluido: ${nombreJugador}`);
+      } else {
+        // Si no tiene nombre o el filtro está apagado, lo agregamos
+        formsFiltered.push(form);
+      }
+    });
+
+    // Creamos un arreglo para guardar los objetos
+    const formIds = [];
+
+    // Iteramos sobre los formularios y extraemos los datos requeridos
+    formsFiltered.forEach((form) => {
+      const auctionIdInput = form.querySelector('input[name="auctionid"]');
+      const itemLevelInput = form.querySelector('input[name="itemLevel"]');
+      const itemQualityInput = form.querySelector('input[name="itemQuality"]');
+      const bidAmountInput = form.querySelector('input[name="bid_amount"]');
+
+      if (
+        auctionIdInput &&
+        itemLevelInput &&
+        itemQualityInput &&
+        bidAmountInput
+      ) {
+        formIds.push({
+          auctionid: auctionIdInput.value,
+          itemLevel: parseInt(itemLevelInput.value, 10),
+          itemQuality: parseInt(itemQualityInput.value, 10),
+          bidAmount: parseInt(bidAmountInput.value, 10),
+        });
+      }
+    });
+
+    return formIds;
+  },
+  async bidItem(auctionid, itemLevel, itemQuality, bidAmount, rubiesNumber) {
+    const link = `${window.location.origin}/game/index.php`;
+
+    await fetch(
+      `${link}?mod=auction&submod=placeBid&ttype=2&rubyAmount=${rubiesNumber}&sh=${urlParams.get(
+        "sh"
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          accept: "*/*",
+          "accept-language": "es,en;q=0.9,cs;q=0.8,it;q=0.7",
+          origin: window.location.origin,
+          referer: `${link}?mod=auction&qry=&itemLevel=105&itemType=7&itemQuality=-1&sh=${urlParams.get(
+            "sh"
+          )}`,
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "x-requested-with": "XMLHttpRequest",
+        },
+        body: `auctionid=${auctionid}&qry=&itemType=7&itemLevel=${itemLevel}&itemQuality=${itemQuality}&buyouthd=0&bid_amount=${bidAmount}&bid=Ofrecer`,
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then((data) => {
+        console.log("item comprado");
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
   },
 };
