@@ -5,7 +5,9 @@ const heal = {
         { name: "heal", value: "heal" },
         { name: "heal-start", value: "heal.enable" },
         { name: "heal-min", value: "heal.hpMin" },
+        { name: "heal-max-price-food", value: "heal.maxPriceFood" },
         { name: "heal-buy-food", value: "heal.buyFood" },
+        { name: "heal-buy-market", value: "heal.buyInMarket" },
         { name: "heal-use-cloths", value: "heal.useCloths" },
         { name: "inventory-slot", value: "heal.bag" },
       ],
@@ -26,6 +28,12 @@ const heal = {
           name: "heal-buy-food",
           value: () => {
             store.data.heal.buyFood = !store.data.heal.buyFood;
+          },
+        },
+        {
+          name: "heal-buy-market",
+          value: () => {
+            store.data.heal.buyInMarket = !store.data.heal.buyInMarket;
           },
         },
         {
@@ -52,9 +60,24 @@ const heal = {
           },
         },
         {
+          name: "heal.maxPriceFood",
+          value: (button, target) => {
+            button.value = store.data.heal.maxPriceFood;
+            button.addEventListener("keyup", () => {
+              store.data.heal.maxPriceFood = button.value;
+            });
+          },
+        },
+        {
           name: "heal.buyFood",
           value: (button, target) => {
             button.checked = store.data.heal.buyFood;
+          },
+        },
+        {
+          name: "heal.buyInMarket",
+          value: (button, target) => {
+            button.checked = store.data.heal.buyInMarket;
           },
         },
         {
@@ -105,7 +128,7 @@ const heal = {
     }
   },
 
-  openBagAndHeal() {
+  async openBagAndHeal() {
     const bags = Array.from(
       document.getElementsByClassName("awesome-tabs")
     ).filter((item) => item.hasAttribute("data-bag-number"));
@@ -113,13 +136,7 @@ const heal = {
     statusLog.innerText = "Abriendo mochila...";
     bags[store.data.heal.bag].click();
 
-    setTimeout(
-      async () =>
-        await this.tryToHeal().then(() => {
-          healing = false;
-        }),
-      1000
-    );
+    await this.tryToHeal();
   },
 
   async tryToHeal() {
@@ -132,6 +149,9 @@ const heal = {
     } else {
       await this.getFootFromPackages();
       await this.buyFood();
+      await this.buyInMarket();
+      healing = false;
+      setTimeout(() => window.location.reload(), 5000);
     }
   },
 
@@ -166,8 +186,46 @@ const heal = {
       }
 
       const priceGold = foodItem.getAttribute("data-price-gold");
-      if (priceGold < goldValue) await info.buyItem(foodItem);
-      setTimeout(() => window.location.reload(), 5000);
+      if (priceGold < goldValue) {
+        await info.buyItem(foodItem);
+        setTimeout(() => window.location.reload(), 5000);
+      }
+    }
+  },
+
+  async buyInMarket() {
+    if (store.data.heal.buyInMarket) {
+      statusLog.innerText = "Comprando en el mercado...";
+      const marketPage = await info.getMarketPage(1, 7);
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(marketPage, "text/html");
+      let totalPaginas =
+        parseInt(
+          doc
+            .getElementsByClassName("standalone")[0]
+            .textContent.match(/Página\s+\d+\s+\/\s+(\d+)/)?.[1]
+        ) || 1;
+
+      let markedList = [];
+
+      for (let i = totalPaginas; i >= 1; i--) {
+        const data = await info.getGeneralMarkedItems(i, 7);
+        markedList = markedList.concat(data);
+      }
+
+      const itemToBuy = markedList
+        .filter((item) => !item.itemName.includes("Vinculado al alma de"))
+        .reduce((cheapestItem, currentItem) => {
+          return !cheapestItem || currentItem.price < cheapestItem.price
+            ? currentItem
+            : cheapestItem;
+        }, null);
+
+      if (itemToBuy) {
+        console.log("comprar", itemToBuy);
+        await info.buyMarkedItem(itemToBuy.buyId, 7);
+        setTimeout(() => window.location.reload(), 5000);
+      }
     }
   },
 

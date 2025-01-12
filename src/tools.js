@@ -94,6 +94,8 @@ let storeDefault = {
     bag: 1,
     hpMin: 25,
     buyFood: false,
+    buyInMarket: false,
+    maxPriceFood: 0,
     useCloths: false,
     timeOut: 0,
     healing: false,
@@ -481,6 +483,28 @@ const info = {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: `buyid=${buyId}&qry=&seller=&f=0&fl=0&fq=-1&s=p&p=1&buy=Comprar`,
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then((data) => {})
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+  },
+  async buyMarkedItem(buyId, category) {
+    let link = `${window.location.origin}/game/index.php`;
+
+    await fetch(`${link}?mod=market&sh=${urlParams.get("sh")}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `buyid=${buyId}&qry=&seller=&f=${category}&fl=0&fq=-1&s=p&p=1&buy=Comprar`,
       credentials: "include",
     })
       .then((response) => {
@@ -1065,5 +1089,84 @@ const info = {
     }
 
     return itemFormValue || undefined; // Retorna undefined si no encuentra nada
+  },
+  async getMarketPage(page = 1, category = 0) {
+    let link = `${window.location.origin}/game/index.php`;
+
+    let htmlText = await fetch(
+      `${link}?mod=market&fl=0&fq=-1&f=${category}&qry=&seller=&s=p&p=${page}&sh=${urlParams.get(
+        "sh"
+      )}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Hubo un error con el fetch:", error);
+      });
+
+    if (!htmlText) return [];
+    return htmlText;
+  },
+  async getGeneralMarkedItems(page = 1, category = 0) {
+    const htmlText = await this.getMarketPage(page, category);
+    // Analiza el HTML
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(htmlText, "text/html");
+
+    // Selecciona el tbody que contiene los formularios y filas
+    let marketTable = doc.getElementById("market_table");
+    let tbody = marketTable.children[0].children[0];
+    // // Obtén todos los elementos dentro del tbody
+    let elements = Array.from(tbody.children);
+
+    // Arreglo para almacenar los datos extraídos
+    let items = [];
+
+    // Recorre los elementos para procesarlos de tres en tres (form, input, tr)
+    for (let i = 1; i < elements.length; i += 10) {
+      let tooltipText =
+        elements[i + 9].children[0].children[0].getAttribute("data-tooltip");
+      let itemName = tooltipText.match(/\[\[\["([^"]+)/);
+      let sellerName = elements[i + 9].children[1].textContent.trim();
+      if (sellerName === store.data.player.name) continue;
+
+      let price = parseInt(
+        elements[i + 9].children[2].textContent.trim().replace(/\./g, "")
+      );
+
+      const goldValElement = document.getElementById("sstat_gold_val");
+      const goldValString = goldValElement.textContent;
+      const goldValue = parseFloat(
+        goldValElement.textContent
+          .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
+          .replace(",", ".") // Reemplaza la coma (separador decimal) por un punto
+      );
+
+      if (
+        price - parseInt(store.data.gold.goldHold) <= goldValue &&
+        price <= parseInt(store.data.heal.maxPriceFood)
+      ) {
+        // Crea un objeto con los datos de cada elemento
+        let item = {
+          buyId: elements[i + 1].value,
+          sellerName: sellerName,
+          price: price,
+          itemName: tooltipText,
+        };
+        items.push(item);
+      }
+    }
+
+    items.sort((a, b) => b.price - a.price);
+
+    return items;
   },
 };
