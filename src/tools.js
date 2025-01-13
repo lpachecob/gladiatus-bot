@@ -1230,11 +1230,11 @@ const info = {
       const nombreJugador = form.querySelector("a span")?.textContent?.trim();
 
       // Si el filtro está activado y tiene un nombre, lo excluimos
-      if (store.data.auction.overbid && nombreJugador) {
-        // Si tiene nombre y el filtro está activado, no lo agregamos
+      if (!store.data.auction.overbid && nombreJugador) {
+        // Si tiene nombre y el filtro no está activado, no lo agregamos
         console.log(`Formulario excluido: ${nombreJugador}`);
       } else {
-        // Si no tiene nombre o el filtro está apagado, lo agregamos
+        // Si no tiene nombre o el filtro está activado, lo agregamos
         formsFiltered.push(form);
       }
     });

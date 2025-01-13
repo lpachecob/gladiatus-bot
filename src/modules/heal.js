@@ -180,8 +180,8 @@ const heal = {
         info.refreshVendor();
       } else if (!foodItem) {
         // store.data.heal.enable = false;
-        store.data.heal.timeOut = 40;
-        setTimeout(() => window.location.reload(), 1000);
+        // store.data.heal.timeOut = 40;
+        // setTimeout(() => window.location.reload(), 1000);
         return;
       }
 
@@ -220,6 +220,8 @@ const heal = {
             ? currentItem
             : cheapestItem;
         }, null);
+
+      console.log("itemToBuy", itemToBuy);
 
       if (itemToBuy) {
         console.log("comprar", itemToBuy);
