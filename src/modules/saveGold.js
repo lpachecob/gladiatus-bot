@@ -167,7 +167,6 @@ const saveGold = {
         }
 
         if (guildMarkedList.length == 0) {
-          console.log("escape 1");
           savingGold = false;
           statusLog.innerText = "Sin rotativos listados";
           store.data.gold.timeOut = 20;
@@ -188,7 +187,6 @@ const saveGold = {
       await collectPackages();
 
       if (store.data.gold.packagesPurchased.length == 0) {
-        console.log("escape 2");
         savingGold = false;
         store.data.gold.timeOut = 20;
         statusLog.innerText = "Sin rotativos pendientes";

@@ -857,7 +857,7 @@ const info = {
       }),
     })
       .then((response) => response.text())
-      .then((data) => console.log(data))
+      .then((data) => {})
       .catch((error) => console.error("Error:", error));
   },
 

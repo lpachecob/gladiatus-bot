@@ -60,7 +60,6 @@ const auction = {
     );
 
     let goldProcess = goldValue;
-    console.log(goldProcess);
 
     if (!store.data.auction.enable) {
       return;
@@ -79,11 +78,7 @@ const auction = {
       auctionItems.forEach(async (item, index) => {
         await delay(index * 100); // Retrasa cada iteración 10 ms acumulativos.
 
-        console.log(item);
         if (goldProcess < item.bidAmount) {
-          console.log(
-            `No tienes suficiente oro para el artículo con ID ${item.auctionid}.`
-          );
           return; // Salta al siguiente elemento.
         }
         goldProcess -= item.bidAmount;

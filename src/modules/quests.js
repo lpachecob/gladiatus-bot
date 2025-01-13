@@ -37,7 +37,6 @@ const quests = {
   },
   start() {
     store.data.quests.searchFood = store.data.quests.searchFood ?? false;
-    console.log(store.data.quests.searchFood);
     if (store.data.quests.enable) {
       const mod = urlParams.get("mod");
       const questButton = document.getElementsByClassName("menuitem")[1];

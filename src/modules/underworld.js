@@ -30,7 +30,6 @@ const underworld = {
         return;
       }
 
-      console.log("Underworld start");
       const lastValidChild = Array.from(
         document.getElementById("submenu2").children
       )
@@ -51,7 +50,6 @@ const underworld = {
         }
       });
 
-      console.log(expeditionTimer.innerText);
       if (expeditionTimer.innerText !== "Ir a la Expedición") return;
 
       let readyToAttack =
@@ -61,10 +59,6 @@ const underworld = {
       if (!readyToAttack) {
         lastValidChild.click();
       }
-
-      console.log(player.health);
-      console.log(store.data.heal.hpMin);
-      console.log(player.expeditionPoints);
 
       if (
         player.health >= store.data.heal.hpMin &&
@@ -85,8 +79,6 @@ const underworld = {
                 "https://gf2.geo.gfsrv.net/cdnae/904194973d21066c96cb414d04d676.jpg"
             );
           });
-
-        console.log(lastElementWithoutImage);
 
         lastElementWithoutImage.children[2].click();
         resolve("Attacked in underworld");

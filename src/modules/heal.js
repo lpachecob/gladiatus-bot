@@ -221,10 +221,10 @@ const heal = {
             : cheapestItem;
         }, null);
 
-      console.log("itemToBuy", itemToBuy);
-
-      if (itemToBuy) {
-        console.log("comprar", itemToBuy);
+      const goldValue = parseFloat(
+        goldValElement.textContent.replace(/\./g, "").replace(",", ".")
+      );
+      if ((itemToBuy, itemToBuy.price <= parseInt(goldValue))) {
         await info.buyMarkedItem(itemToBuy.buyId, 7);
         setTimeout(() => window.location.reload(), 5000);
       }
