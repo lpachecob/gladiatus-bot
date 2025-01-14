@@ -221,6 +221,8 @@ const heal = {
             : cheapestItem;
         }, null);
 
+      const goldValElement = document.getElementById("sstat_gold_val");
+
       const goldValue = parseFloat(
         goldValElement.textContent.replace(/\./g, "").replace(",", ".")
       );
