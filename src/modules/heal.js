@@ -208,10 +208,11 @@ const heal = {
 
       let markedList = [];
 
-      for (let i = totalPaginas; i >= 1; i--) {
+      const maxIteraciones = Math.min(10, totalPaginas); // Determina el límite máximo de iteraciones
+      for (let i = totalPaginas; i >= totalPaginas - maxIteraciones + 1; i--) {
         const data = await info.getGeneralMarkedItems(i, 7);
         markedList = markedList.concat(data);
-      }
+      }      
 
       const itemToBuy = markedList
         .filter((item) => !item.itemName.includes("Vinculado al alma de"))
@@ -220,7 +221,7 @@ const heal = {
             ? currentItem
             : cheapestItem;
         }, null);
-
+console.log(itemToBuy)
       const goldValElement = document.getElementById("sstat_gold_val");
 
       const goldValue = parseFloat(
