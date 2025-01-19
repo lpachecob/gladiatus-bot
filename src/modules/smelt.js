@@ -22,6 +22,26 @@ const smelt = {
   },
   async start() {
     if (store.data.smelt.enable) {
+      const goldValElement = document.getElementById("sstat_gold_val");
+      const goldValue = parseInt(
+        goldValElement.textContent
+          .replace(/\./g, "") // Elimina todos los puntos (separadores de miles)
+          .replace(",", ".") // Reemplaza la coma (separador decimal) por
+      );
+
+      if (store.data.smelt.timeOut > 0) {
+        const countdowngold = setInterval(() => {
+          store.data.smelt.timeOut -= 1; // Restar 1 al timeOut cada segundo
+          document.getElementById(
+            "smeltTimer"
+          ).innerText = `: ${store.data.smelt.timeOut}s`;
+          if (store.data.smelt.timeOut <= 0) {
+            clearInterval(countdowngold); // Detener el intervalo cuando timeOut sea 0
+            window.location.reload(); // Recargar la página
+          }
+        }, 1000); // Intervalo de 1 segundo
+      }
+
       statusLog.innerText = "Iniciando Fundición";
       smelting = true;
       statusLog.innerText = "Buscando forjas";
@@ -57,6 +77,15 @@ const smelt = {
         }
       }
 
+      const price = await info.getSmeltItemPriceRent(
+        forgeToSmelt,
+        itemToSmeltId
+      );
+      if (price >= goldValue) {
+        store.data.smelt.timeOut = 20;
+        statusLog.innerText = "";
+        return;
+      }
       statusLog.innerText = "Fundiendo items";
       await info.smeltResourcesFromSmelt(forgeToSmelt, itemToSmeltId);
     }

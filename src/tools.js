@@ -966,6 +966,27 @@ const info = {
       }),
     }).then((data) => window.location.reload());
   },
+  async getSmeltItemPriceRent(slot, itemId) {
+    let link = `${window.location.origin}/game/ajax.php`;
+
+    const result = await fetch(`${link}?mod=forge&submod=getSmeltingPreview`, {
+      method: "POST",
+
+      body: new URLSearchParams({
+        mod: "forge",
+        submod: "getSmeltingPreview",
+        mode: "smelting",
+        slot: slot,
+        iid: itemId,
+        amount: 1,
+        a: 1732285564634,
+        sh: urlParams.get("sh"),
+      }),
+    }).then((response) => response.json());
+    
+    const itemRentPrice = result.slots[slot].formula.rent[2]
+    return itemRentPrice
+  },
   async getItemForSmelt() {
     let link = `${window.location.origin}/game/index.php`;
     let htmlText = await fetch(
