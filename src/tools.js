@@ -512,11 +512,11 @@ const info = {
         console.error("Hubo un error con el fetch:", error);
       });
   },
-  async searchPackage(tooltipText) {
+  async getPackagesPages() {
     let link = `${window.location.origin}/game/index.php`;
 
     let htmlText = await fetch(
-      `${link}?mod=packages&f=9&fq=-1&qry=&page=1&sh=${urlParams.get("sh")}`,
+      `${link}?mod=packages&f=0&fq=-1&qry=&page=1&sh=${urlParams.get("sh")}`,
       {
         method: "GET",
         credentials: "include",
@@ -535,34 +535,78 @@ const info = {
     if (!htmlText) return [];
 
     // Analiza el HTML
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(htmlText, "text/html");
-    const packageItems = doc.getElementsByClassName("packageItem");
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, "text/html");
+    const pages = doc.getElementsByClassName("paging_numbers")[1].children;
+    const totalpages = pages[pages.length - 1].innerText;
+    return parseInt(totalpages);
+  },
+  async searchPackage(tooltipText) {
+    const packagesPages = await info.getPackagesPages();
+    const maxCycles = Math.min(packagesPages || 0, 10); // Valida packagesPages
 
-    // Convierte la colección HTML en un array y filtra los que contienen el texto "Mercado" en el hijo especificado
-    const itemsWithMercado = Array.from(packageItems).filter((item) => {
-      // Encuentra el hijo con clase "sender ellipsis"
-      const senderEllipsis = item.querySelector(".sender.ellipsis");
+    const link = `${window.location.origin}/game/index.php`;
+    let itemFormValue = null;
 
-      // Verifica si el hijo existe y si su texto incluye "Mercado"
-      return senderEllipsis && senderEllipsis.innerText.includes("Mercado");
-    });
+    for (let i = 1; i <= maxCycles; i++) {
+      try {
+        console.log(
+          `${link}?mod=packages&f=0&fq=-1&qry=&page=${i}&sh=${urlParams.get(
+            "sh"
+          )}`
+        );
+        const htmlText = await fetch(
+          `${link}?mod=packages&f=0&fq=-1&qry=&page=${i}&sh=${urlParams.get(
+            "sh"
+          )}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        ).then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+          return response.text();
+        });
 
-    let itemStorage = tooltipText.split(",");
-    let itemFormValue;
-    itemsWithMercado.forEach((element) => {
-      let itemData = element.children[2].children[0]
-        .getAttribute("data-tooltip")
-        .split(",");
-      if (
-        itemData.length > 2 &&
-        itemData[0] === itemStorage[0] &&
-        itemData[2] === itemStorage[2]
-      ) {
-        itemFormValue = element.children[0].value;
+        if (!htmlText) continue;
+
+        const doc = new DOMParser().parseFromString(htmlText, "text/html");
+        const packageItems = Array.from(
+          doc.getElementsByClassName("packageItem")
+        );
+
+        // Filtra los elementos con el texto "Mercado"
+        const itemsWithMercado = packageItems.filter((item) => {
+          const senderEllipsis = item.querySelector(".sender.ellipsis");
+          return senderEllipsis && senderEllipsis.innerText.includes("Mercado");
+        });
+
+        const itemStorage = tooltipText.split(",");
+
+        for (const element of itemsWithMercado) {
+          const itemData = element.children[2]?.children[0]
+            ?.getAttribute("data-tooltip")
+            ?.split(",");
+          if (
+            itemData?.length > 2 &&
+            itemData[0] === itemStorage[0] &&
+            itemData[2] === itemStorage[2]
+          ) {
+            itemFormValue = element.children[0].value;
+            break;
+          }
+        }
+
+        if (itemFormValue) return itemFormValue; // Detiene el ciclo si encuentra el valor
+      } catch (error) {
+        console.error("Hubo un error con el fetch:", error);
+        continue; // Continúa con el siguiente ciclo si hay un error
       }
-    });
-    return itemFormValue;
+    }
+
+    return itemFormValue || null; // Retorna el valor encontrado o un array vacío
   },
   async collectPackage(formId, position = { x: 1, y: 1 }) {
     try {
@@ -983,9 +1027,9 @@ const info = {
         sh: urlParams.get("sh"),
       }),
     }).then((response) => response.json());
-    
-    const itemRentPrice = result.slots[slot].formula.rent[2]
-    return itemRentPrice
+
+    const itemRentPrice = result.slots[slot].formula.rent[2];
+    return itemRentPrice;
   },
   async getItemForSmelt() {
     let link = `${window.location.origin}/game/index.php`;
