@@ -31,3 +31,15 @@ Para instalar la extensión en modo de carga descomprimida desde el panel de ext
 ## Uso
 Una vez instalada, ajusta las configuraciones dentro de la extensión para personalizar el comportamiento de cada función según tus preferencias en el juego.
 ---
+## ☕ Apoya este proyecto
+
+Si **Gladiatus Bot** te resulta útil y quieres apoyar el desarrollo de nuevas funcionalidades, puedes invitarnos un café 💙  
+Tu apoyo ayuda a mantener el proyecto activo, documentado y en constante mejora.
+
+<div align="center">
+  <a href="https://www.buymeacoffee.com/epolabs" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png"
+         alt="Apóyanos con un café"
+         style="height: 55px;width: 200px;">
+  </a>
+</div>
